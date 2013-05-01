@@ -1,0 +1,2 @@
+Stylecop ignore automatisch generereerde code (Assembly.info.cs).
+http://shishkin.wordpress.com/2008/07/08/stylecop-how-to-ignore-generated-code/

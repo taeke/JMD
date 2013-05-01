@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JMD", "JMD\JMD.csproj", "{90F8C541-AC42-48A7-8775-46EB65A7678E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawMap", "DrawMap\DrawMap.csproj", "{26C4250D-67A3-4B94-A26F-02DBAE2DD020}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawMap.Tests", "DrawMap.Tests\DrawMap.Tests.csproj", "{EC42BAE7-837E-4965-A6F7-A1859681E02C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90F8C541-AC42-48A7-8775-46EB65A7678E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90F8C541-AC42-48A7-8775-46EB65A7678E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90F8C541-AC42-48A7-8775-46EB65A7678E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90F8C541-AC42-48A7-8775-46EB65A7678E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C4250D-67A3-4B94-A26F-02DBAE2DD020}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C4250D-67A3-4B94-A26F-02DBAE2DD020}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C4250D-67A3-4B94-A26F-02DBAE2DD020}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C4250D-67A3-4B94-A26F-02DBAE2DD020}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC42BAE7-837E-4965-A6F7-A1859681E02C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC42BAE7-837E-4965-A6F7-A1859681E02C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC42BAE7-837E-4965-A6F7-A1859681E02C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC42BAE7-837E-4965-A6F7-A1859681E02C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,15 @@
+LOG
+===
+
+* - Een ingevuld filename (zonder extentie) geeft aan dat het een reeds benoemd bestand is. 
+* - Is de filename leeg dan is het een nog niet eerder opgeslagen new bestand.
+* - Een boolean MayOverwriteExcisting geeft aan of de bestaand bestand gewoon overschreven mag worden.
+* - Als MayOverwriteExcisting false is en het bestand bestaat toch tijdens de save dan wordt er een exception gethrowd.
+* - Als filname niet is ingevuld en save wordt aangeroepen dan wordt een exception gethrowd.
+* - Na het invullen van de filename kan de boolean FilenameExcists aangeroepen worden om te controleren of MayOverWriteExcisting gezet moet worden.
+* - Bij het openen van een bestaand bestand wordt de boolean MayOverWriteExcisting meteen op true gezet.
+* - Boolean MapChanged wordt zodra er iets wordt gedaan met de map op true gezet.
+* - Bij het aanroepen van Open wordt een exception gethrowd als de boolean MapChanged true is.
+* - Bij het aanroepen van Open wordt een exception gethrowd als FileName al ingevuld is.
+* - Na Save wordt de boolean MapChanged false gezet.
+* - Bij het aanroepen van Open wordt een exception gethrowd als de doorgegeven FileName niet bestaat.
