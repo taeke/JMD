@@ -1,0 +1,95 @@
+﻿namespace DrawMap
+{
+    using System;
+    using DrawMap.Interface;
+
+    /// <summary>
+    /// An endpoint on a border.
+    /// </summary>
+    [Serializable]
+    public class BorderEndPoint
+    {
+        /// <summary>
+        /// Backing field for X.
+        /// </summary>
+        private double x;
+
+        /// <summary>
+        /// Backing field for Y.
+        /// </summary>
+        private double y;
+
+        /// <summary>
+        /// Backing field for Number.
+        /// </summary>
+        private int number;
+
+        /// <summary>
+        /// parameter less constructor is needed for serializing.
+        /// </summary>
+        public BorderEndPoint()
+        {
+        }
+
+        /// <summary>
+        /// Create an instance of BorderEndPoint
+        /// </summary>
+        /// <param name="x"> the X coordinant </param>
+        /// <param name="y"> the Y coordinant </param>
+        /// <param name="number"> the unique number for this instance. </param>
+        public BorderEndPoint(double x, double y, int number)
+        {
+            this.x = x;
+            this.y = y;
+            this.number = number;
+        }
+
+        /// <summary>
+        /// X Coordinant.
+        /// </summary>
+        public double X
+        {
+            get
+            {
+                return this.x;
+            }
+
+            set
+            {
+                this.x = value;
+            }
+        }
+
+        /// <summary>
+        /// Y Coordinant
+        /// </summary>
+        public double Y
+        {
+            get
+            {
+                return this.y;
+            }
+
+            set
+            {
+                this.y = value;
+            }
+        }
+
+        /// <summary>
+        /// Unique number for this BorderEndPoint.
+        /// </summary>
+        public int Number
+        {
+            get
+            {
+                return this.number;
+            }
+
+            set
+            {
+                this.number = value;
+            }
+        }
+    }
+}

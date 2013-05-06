@@ -1,7 +1,11 @@
 ﻿namespace DrawMap
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using System.Xml;
+    using System.Xml.Serialization;
     using DrawMap.Interface;
 
     /// <summary>
@@ -9,10 +13,37 @@
     /// </summary>
     public class MapFiles : IMapFiles
     {
+        /// <summary>
+        /// Backing field for FileName.
+        /// </summary>
         private string fileName;
+
+        /// <summary>
+        /// Backing field for MapChanged.
+        /// </summary>
         private bool mapChanged = false;
+
+        /// <summary>
+        /// Backing field for MayOverwriteExcisting.
+        /// </summary>
         private bool mayOverwriteExcisting = false;
+
+        /// <summary>
+        /// Backing field for IgnoreChanges.
+        /// </summary>
         private bool ignoreChanges = false;
+
+        /// <summary>
+        /// The map instance.
+        /// </summary>
+        private Map map = new Map();
+
+        /// <summary>
+        /// Create the MapFiles instance.
+        /// </summary>
+        public MapFiles()
+        {
+        }
 
         /// <summary>
         /// <inheritDoc/>
@@ -101,8 +132,10 @@
                 throw new InvalidOperationException(Strings.FILENAME_EXCIST_MAY_NOT_OVERWRITE);
             }
 
-            using (TextWriter textWriter = File.AppendText(this.fileName))
+            using (TextWriter textWriter = new StreamWriter(this.fileName))
             {
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Map));
+                xmlSerializer.Serialize(textWriter, this.map);
             }
 
             this.mapChanged = false;
@@ -116,6 +149,11 @@
         /// <param name="fileName"> <inheritDoc/> </param>
         public void Open(string fileName)
         {
+            if (this.mapChanged && !this.ignoreChanges)
+            {
+                throw new InvalidOperationException(Strings.CHANGES_BUT_NOT_IGNORE);
+            }
+
             if (fileName == null)
             {
                 throw new ArgumentNullException("fileName");
@@ -136,7 +174,20 @@
                 throw new InvalidOperationException(Strings.FILE__DOES_NOT_EXCIST);
             }
 
-            TextReader textReader = new StreamReader(fileName);
+            using (TextReader textReader = new StreamReader(fileName))
+            {
+                XmlReaderSettings settings = new XmlReaderSettings();
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Map));
+                try
+                {
+                    this.map = (Map)xmlSerializer.Deserialize(textReader);
+                }
+                catch (InvalidOperationException) 
+                {
+                    throw new InvalidOperationException(Strings.MALFORMED_XML);
+                }
+            }
+
             this.mayOverwriteExcisting = true;
             this.fileName = fileName;
         }
@@ -151,10 +202,46 @@
                 throw new InvalidOperationException(Strings.CHANGES_BUT_NOT_IGNORE);
             }
 
+            this.map.BorderEndpoints.Clear();
             this.mapChanged = false;
             this.mayOverwriteExcisting = false;
             this.ignoreChanges = false;
             this.fileName = string.Empty;
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public int AddBorderEndPoint(double x, double y)
+        {
+            this.mapChanged = true;
+            int maxNumber = this.map.BorderEndpoints.Count == 0 ? 0 : this.map.BorderEndpoints.OrderByDescending(b => b.Number).First().Number;
+            BorderEndPoint borderEndPoint = new BorderEndPoint(x, y, maxNumber + 1);
+            this.map.BorderEndpoints.Add(borderEndPoint);
+            return borderEndPoint.Number;
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public void RemoveEndPoint(int number)
+        {
+            BorderEndPoint borderEndPoint = this.map.BorderEndpoints.Find(b => b.Number == number);
+            if (borderEndPoint == null)
+            {
+                throw new ArgumentOutOfRangeException(Strings.BORDERENDPOINT_DOES_NOT_EXCIST);
+            }
+
+            this.mapChanged = true;
+            this.map.BorderEndpoints.Remove(borderEndPoint);
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public List<BorderEndPoint> GetBorderEndPoints()
+        {
+            return this.map.BorderEndpoints;
         }
     }
 }

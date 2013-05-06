@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Map xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <BorderEndpoints>
+    <BorderEndPoint>
+      <X>71</X>
+      <Y>47.04</Y>
+      <Number>1</Number>
+    </BorderEndPoint>
+    <BorderEndPoint>
+      <X>77</X>
+      <Y>171.04</Y>
+      <Number>2</Number>
+    </BorderEndPoint>
+    <BorderEndPoint>
+      <X>221</X>
+      <Y>177.04</Y>
+      <Number>3</Number>
+    </BorderEndPoint>
+    <BorderEndPoint>
+      <X>226</X>
+      <Y>53.04</Y>
+      <Number>4</Number>
+    </BorderEndPoint>
+  </BorderEndpoints>
+</Map>

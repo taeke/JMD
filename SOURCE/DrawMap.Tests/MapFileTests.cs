@@ -1,8 +1,11 @@
 ﻿namespace DrawMap.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using DrawMap.Interface;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Moq;
 
     /// <summary>
     /// The tests for the Map class.
@@ -13,7 +16,7 @@
         /// <summary>
         /// The instance of the class under test.
         /// </summary>
-        private MapFiles map;
+        private MapFiles mapFiles;
 
         /// <summary>
         /// Initializing for every test.
@@ -21,7 +24,7 @@
         [TestInitialize]
         public void MapInitialize()
         {
-            this.map = new MapFiles();
+            this.mapFiles = new MapFiles();
         }
 
         /// <summary>
@@ -39,10 +42,10 @@
                 // Arange
 
                 // Act
-                this.map.FileName = "test.xml";
+                this.mapFiles.FileName = "test.xml";
 
                 // Assert
-                Assert.IsTrue(this.map.MapChanged);
+                Assert.IsTrue(this.mapFiles.MapChanged);
             }
         }
 
@@ -59,11 +62,11 @@
             public void ShouldThrowExceptionIfMayOverwriteExcistingIsFalseButFileExcists()
             {
                 // Arange
-                this.map.MayOverwriteExcisting = false;
-                this.map.FileName = "test.xml";
+                this.mapFiles.MayOverwriteExcisting = false;
+                this.mapFiles.FileName = "JMD.xml";
 
                 // Act
-                this.map.Save();
+                this.mapFiles.Save();
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
@@ -78,12 +81,12 @@
                 // Arange
 
                 // Act
-                this.map.Save();
+                this.mapFiles.Save();
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
             }
-            
+
             /// <summary>
             /// Test if the Save method sets MapChanged to false.
             /// </summary>
@@ -91,14 +94,14 @@
             public void ShouldSetMapChangedFalse()
             {
                 // Arange
-                this.map.FileName = "test2.xml";
-                this.map.MayOverwriteExcisting = true;
+                this.mapFiles.FileName = "JMD2.xml";
+                this.mapFiles.MayOverwriteExcisting = true;
 
                 // Act
-                this.map.Save();
+                this.mapFiles.Save();
 
                 // Assert
-                Assert.IsFalse(this.map.MapChanged);
+                Assert.IsFalse(this.mapFiles.MapChanged);
             }
 
             /// <summary>
@@ -108,15 +111,15 @@
             public void ShouldSetIgnoreChangesFalse()
             {
                 // Arange
-                this.map.FileName = "test2.xml";
-                this.map.MayOverwriteExcisting = true;
-                this.map.IgnoreChanges = true;
+                this.mapFiles.FileName = "JMD2.xml";
+                this.mapFiles.MayOverwriteExcisting = true;
+                this.mapFiles.IgnoreChanges = true;
 
                 // Act
-                this.map.Save();
+                this.mapFiles.Save();
 
                 // Assert
-                Assert.IsFalse(this.map.IgnoreChanges);
+                Assert.IsFalse(this.mapFiles.IgnoreChanges);
             }
 
             /// <summary>
@@ -126,16 +129,16 @@
             public void ShouldSetMayOverwriteExcistingTrue()
             {
                 // Arange
-                File.Delete("test2.xml");
-                this.map.FileName = "test2.xml";
-                this.map.MayOverwriteExcisting = false;
-                this.map.IgnoreChanges = true;
+                File.Delete("JMD2.xml");
+                this.mapFiles.FileName = "JMD2.xml";
+                this.mapFiles.MayOverwriteExcisting = false;
+                this.mapFiles.IgnoreChanges = true;
 
                 // Act
-                this.map.Save();
+                this.mapFiles.Save();
 
                 // Assert
-                Assert.IsTrue(this.map.MayOverwriteExcisting);
+                Assert.IsTrue(this.mapFiles.MayOverwriteExcisting);
             }
 
             /// <summary>
@@ -145,12 +148,12 @@
             public void ShouldCreateXMLFile()
             {
                 // Arange
-                const string FileName = "test6.xml";
-                this.map.FileName = FileName;
-                this.map.MayOverwriteExcisting = true;
+                const string FileName = "JMD6.xml";
+                this.mapFiles.FileName = FileName;
+                this.mapFiles.MayOverwriteExcisting = true;
 
                 // Act
-                this.map.Save();
+                this.mapFiles.Save();
 
                 // Assert
                 File.Exists(FileName);
@@ -170,14 +173,14 @@
             public void ShouldSetMapChangedFalse()
             {
                 // Arrange
-                this.map.FileName = "test.xml";
-                this.map.IgnoreChanges = true;
+                this.mapFiles.FileName = "JMD.xml";
+                this.mapFiles.IgnoreChanges = true;
 
                 // Act
-                this.map.New();
+                this.mapFiles.New();
 
                 // Assert
-                Assert.IsFalse(this.map.MapChanged);
+                Assert.IsFalse(this.mapFiles.MapChanged);
             }
 
             /// <summary>
@@ -187,15 +190,15 @@
             public void ShouldSetMayOverwriteExcistingFalse()
             {
                 // Arrange
-                this.map.FileName = "test.xml";
-                this.map.IgnoreChanges = true;
-                this.map.MayOverwriteExcisting = true;
+                this.mapFiles.FileName = "JMD.xml";
+                this.mapFiles.IgnoreChanges = true;
+                this.mapFiles.MayOverwriteExcisting = true;
 
                 // Act
-                this.map.New();
+                this.mapFiles.New();
 
                 // Assert
-                Assert.IsFalse(this.map.MapChanged);
+                Assert.IsFalse(this.mapFiles.MapChanged);
             }
 
             /// <summary>
@@ -205,14 +208,14 @@
             public void ShouldSetIgnoreChangesFalse()
             {
                 // Arrange
-                this.map.FileName = "test.xml";
-                this.map.IgnoreChanges = true;
+                this.mapFiles.FileName = "JMD.xml";
+                this.mapFiles.IgnoreChanges = true;
 
                 // Act
-                this.map.New();
+                this.mapFiles.New();
 
                 // Assert
-                Assert.IsFalse(this.map.MapChanged);
+                Assert.IsFalse(this.mapFiles.MapChanged);
             }
 
             /// <summary>
@@ -222,14 +225,14 @@
             public void ShouldSetFileNameEmpty()
             {
                 // Arrange
-                this.map.FileName = "test.xml";
-                this.map.IgnoreChanges = true;
+                this.mapFiles.FileName = "JMD.xml";
+                this.mapFiles.IgnoreChanges = true;
 
                 // Act
-                this.map.New();
-                
+                this.mapFiles.New();
+
                 // Assert
-                Assert.AreEqual(string.Empty, this.map.FileName);
+                Assert.AreEqual(string.Empty, this.mapFiles.FileName);
             }
 
             /// <summary>
@@ -239,16 +242,16 @@
             public void ShouldThrowExceptionIfIgnoreChangesFalseAndThereAreChanges()
             {
                 // Arrange
-                this.map.FileName = "test.xml";
+                this.mapFiles.FileName = "JMD.xml";
 
                 // Act
-                this.map.New();
+                this.mapFiles.New();
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
             }
         }
-        
+
         /// <summary>
         /// The tests for the Open Method.
         /// </summary>
@@ -264,10 +267,10 @@
                 // Arange
 
                 // Act
-                this.map.Open("test.xml");
+                this.mapFiles.Open("JMD.xml");
 
                 // Assert
-                Assert.IsTrue(this.map.MayOverwriteExcisting);
+                Assert.IsTrue(this.mapFiles.MayOverwriteExcisting);
             }
 
             /// <summary>
@@ -277,10 +280,10 @@
             public void ShouldThrowExceptionIfMapChanged()
             {
                 // Arange
-                this.map.FileName = "test.xml";
+                this.mapFiles.FileName = "JMD.xml";
 
                 // Act
-                this.map.Open("test.xml");
+                this.mapFiles.Open("JMD.xml");
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
@@ -295,7 +298,7 @@
                 // Arrange
 
                 // Act
-                this.map.Open("test3.xml");
+                this.mapFiles.Open("JMD3.xml");
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
@@ -308,13 +311,13 @@
             public void ShouldSetFileName()
             {
                 // Arange
-                const string FileName = "test.xml";
+                const string FileName = "JMD.xml";
 
                 // Act
-                this.map.Open(FileName);
+                this.mapFiles.Open(FileName);
 
                 // Assert
-                Assert.AreEqual(FileName, this.map.FileName);
+                Assert.AreEqual(FileName, this.mapFiles.FileName);
             }
 
             /// <summary>
@@ -324,9 +327,9 @@
             public void ShouldThrowExceptionIfFileNameIsNull()
             {
                 // Arrange
-                
+
                 // Act
-                this.map.Open(null);
+                this.mapFiles.Open(null);
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
@@ -341,10 +344,95 @@
                 // Arrange
 
                 // Act
-                this.map.Open(string.Empty);
+                this.mapFiles.Open(string.Empty);
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// If IgnoreChanges is NOT true and there are changes then calling Open Should throw an InvalidOperationException.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+            public void ShouldThrowExceptionIfIgnoreChangesFalseAndThereAreChanges()
+            {
+                // Arange
+                const string FileName = "JMD.xml";
+                this.mapFiles.FileName = FileName;
+
+                // Act
+                this.mapFiles.Open(FileName);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+        }
+
+        /// <summary>
+        /// Tests for the AddBorderEndPoint method.
+        /// </summary>
+        [TestClass]
+        public class TheAddBorderEndPointMethod : MapFileTests
+        {
+            /// <summary>
+            /// Test if calling AddBordEndPoint returns the number we configured in the mock.
+            /// </summary>
+            [TestMethod]
+            public void ShouldReturnANumber()
+            {
+                // Arange
+
+                // Act
+                int number = this.mapFiles.AddBorderEndPoint(1, 1);
+
+                // Assert the mock is configureted to return 1.
+                Assert.AreEqual(1, number);
+            }
+        }
+
+        /// <summary>
+        /// The tests for the RemoveEndPoint method.
+        /// </summary>
+        [TestClass]
+        public class TheRemoveEndPointMethod : MapFileTests
+        {
+            /// <summary>
+            /// If RemoveEndPoint is calles with an invalid number it should throw an ArgumentOutOfRangeException
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionIfNumberDoesNotExicst()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.RemoveEndPoint(5);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+        }
+
+        /// <summary>
+        /// The tests for the RemoveEndPoint method.
+        /// </summary>
+        [TestClass]
+        public class TheGetBorderEndPointsMethod : MapFileTests
+        {
+            /// <summary>
+            /// A call to GetBorderEndPoints should return a list of <see cref="BorderEndPoint"/>.
+            /// </summary>
+            [TestMethod]
+            public void ShouldReturnAListWithBordEndPoints()
+            {
+                // Arange
+                this.mapFiles.AddBorderEndPoint(1, 1);
+
+                // Act
+                var endPoints = this.mapFiles.GetBorderEndPoints();
+
+                // Assert
+                Assert.IsNotNull(endPoints);
+                Assert.AreEqual(1, endPoints.Count);
             }
         }
     }

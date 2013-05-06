@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BORDERENDPOINT_DOES_NOT_EXCIST" xml:space="preserve">
+    <value>The provided number for the BorderEndPoint is not found.</value>
+  </data>
   <data name="CANT_OPEN_IF_CHANGED" xml:space="preserve">
     <value>You can't call open if the map allready changed. Create a new instance to open.</value>
   </data>
@@ -134,5 +137,8 @@
   </data>
   <data name="FILE__DOES_NOT_EXCIST" xml:space="preserve">
     <value>The file does not excist.</value>
+  </data>
+  <data name="MALFORMED_XML" xml:space="preserve">
+    <value>The xml file does not seem to be a JMD.xml file.</value>
   </data>
 </root>

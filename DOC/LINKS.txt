@@ -1,2 +1,8 @@
 Stylecop ignore automatisch generereerde code (Assembly.info.cs).
 http://shishkin.wordpress.com/2008/07/08/stylecop-how-to-ignore-generated-code/
+
+Mousedown on Canvas
+http://social.msdn.microsoft.com/forums/en-US/wpf/thread/ad232a54-5ec2-4393-a281-f9f808f1e006/
+
+Waar moet de UnityContainer gecreeërd worden?
+http://blog.ploeh.dk/2011/07/28/CompositionRoot/

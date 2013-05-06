@@ -1,23 +1,30 @@
 TODO
 ====
-- Ignore van github uitbreiden.
-- Alles nog een keer nalopen.
-- Uploaden naar Github.
-
-- Teken opervlak toevoegen.
-- Op muisklik ellipsen tekenen.
-- Point class maken met ellipse en nummer en lijst hiervan in map en deze ook vullen op muis klik.
-- Combobox vullen met de lijst met points en nummer tonen en zichtbaar maken welke geselecteerd is bij nieuw altijd meteen nieuwe geselecteerd.
-- Als ellipse te dicht bij andere ellipse niet tekenen maar deze selecteren.
-- Delete knop voor geselecteerde ellipse en dan ook point uit lijst.
-- Points opslaan in xml.
-- Bij openen xml points opnieuw tekenen.
+- xsd genereren voor xml.
 - Bij openen controle of het een geldige xml is.
-- Mapchanged aanpassen wanneer een point wordt toegevoegd of verwijderd.
-- Exit functie met controle op MapChanged.
+- Duidelijker scheiding tussen drawing surface en controls.
+- Alles nog een keer nalopen en uploaden naar github.
 
 DONE
 ====
 - Creeer een menu file for new / open / save en de bijbehorende logica voor het opslaan van de xml die de gegevens opslaat.
 - Check of alle tests zijn geschreven.
 - Alle StyleCop warnings wegwerken.
+- Ignore van github uitbreiden.
+- Alles nog een keer nalopen.
+- Uploaden naar Github.
+- Teken opervlak toevoegen.
+- Op muisklik ellipsen tekenen.
+- Point class maken met nummer en lijst hiervan in map en deze ook vullen op muis klik.
+- Combobox vullen met de lijst met points en nummer. 
+- ItemFormatString voor combobox maken zodat alleen nummer getoond wordt.
+- Zorgen dat nieuw toegevoegde ellipse geselecteerd wordt in combobox.
+- Zichtbaar maken welke geselecteerd is in combobox.
+- Bij selectie wijzigen in combobox deze ook zichtbaar maken.
+- Als ellipse te dicht bij andere ellipse niet tekenen maar deze selecteren.
+- Points opslaan in xml.
+- Delete knop voor geselecteerde ellipse en dan ook point uit lijst.
+- Bij openen xml points opnieuw tekenen.
+- Mapchanged aanpassen wanneer een point wordt toegevoegd of verwijderd.
+- Exit functie met controle op MapChanged.
+

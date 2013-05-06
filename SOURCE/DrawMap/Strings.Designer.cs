@@ -61,6 +61,15 @@ namespace DrawMap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided number for the BorderEndPoint is not found..
+        /// </summary>
+        internal static string BORDERENDPOINT_DOES_NOT_EXCIST {
+            get {
+                return ResourceManager.GetString("BORDERENDPOINT_DOES_NOT_EXCIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can&apos;t call open if the map allready changed. Create a new instance to open..
         /// </summary>
         internal static string CANT_OPEN_IF_CHANGED {
@@ -111,6 +120,15 @@ namespace DrawMap {
         internal static string FILENAME_NOT_FILLED {
             get {
                 return ResourceManager.GetString("FILENAME_NOT_FILLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The xml file does not seem to be a JMD.xml file..
+        /// </summary>
+        internal static string MALFORMED_XML {
+            get {
+                return ResourceManager.GetString("MALFORMED_XML", resourceCulture);
             }
         }
     }

@@ -13,3 +13,10 @@ LOG
 * - Bij het aanroepen van Open wordt een exception gethrowd als FileName al ingevuld is.
 * - Na Save wordt de boolean MapChanged false gezet.
 * - Bij het aanroepen van Open wordt een exception gethrowd als de doorgegeven FileName niet bestaat.
+
+
+            unityContainer.RegisterType<Func<double, double, int, IBorderEndPoint>>(new InjectionFactory(c => new Func<double, double, int, IBorderEndPoint>((x, y, n) => c.Resolve<IBorderEndPoint>(new ParameterOverrides { { "x", x }, { "y", y }, { "number", n } }))));
+
+            
+	
+tobsen, kwelch, seems you are trying to use xsd command in Command window of Visual Studio. Dean is talking about Visual Studio command prompt, which you can open from Start Menu (Start Menu -> All Programs -> Microsoft Visual Studio 2010 -> Visual Studio Tools -> Visual Studio Command Prompt (2010) – Gaurav Arya Sep 2 '12 at 12:18            
