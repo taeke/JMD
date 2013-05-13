@@ -1,9 +1,6 @@
 TODO
 ====
-- xsd genereren voor xml.
-- Bij openen controle of het een geldige xml is.
-- Duidelijker scheiding tussen drawing surface en controls.
-- Alles nog een keer nalopen en uploaden naar github.
+- BorderEndPoint1_SelectionChanged zit veel dubbele code met nummer 2 in. Kijken of dit weg kan.
 
 DONE
 ====
@@ -27,4 +24,12 @@ DONE
 - Bij openen xml points opnieuw tekenen.
 - Mapchanged aanpassen wanneer een point wordt toegevoegd of verwijderd.
 - Exit functie met controle op MapChanged.
-
+- xsd genereren voor xml.
+- Bij openen controle of het een geldige xml is.
+- Duidelijker scheiding tussen drawing surface en controls.
+- Alles nog een keer nalopen en uploaden naar github.
+- Knop delete voor CountryBorder werkend maken.
+- Geen kruizende lijnen.
+- Opslaan lijnen en weer inlezen.
+- EndPoint niet verwijderen als onderdeel van een lijn.
+- Geen punten tekenen als endpoint tools niet getoond worden.

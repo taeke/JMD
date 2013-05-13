@@ -3,7 +3,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// The files and operation on them for the map.
+    /// The operation on the files for the map.
     /// </summary>
     public interface IMapFiles
     {
@@ -13,7 +13,7 @@
         string FileName { get; set; }
 
         /// <summary>
-        /// If there excists a file with the same name as FileName Save will overwrite it if this is true.
+        /// If there excists a file with the same name as FileName. Save will overwrite it if this is true.
         /// </summary>
         bool MayOverwriteExcisting { get; set; }
 
@@ -53,19 +53,38 @@
         /// </summary>
         /// <param name="X"> the X coördinant. </param>
         /// <param name="Y"> the Y coördinant. </param>
-        /// <returns> the unique indentifying number of this <see cref="BorderEndPoint"/>. </returns>
+        /// <returns> The unique indentifying number of the <see cref="BorderEndPoint"/>. </returns>
         int AddBorderEndPoint(double x, double y);
+
+        /// <summary>
+        /// Adds a new <see cref="CountryBorder"/>
+        /// </summary>
+        /// <param name="Number1"> Unique indentifying number of the first <see cref="BorderEndPoint"/></param>
+        /// <param name="Number2"> Unique indentifying number of the second <see cref="BorderEndPoint"/></param>
+        void AddCountryBorder(int[] numbers);
 
         /// <summary>
         /// Removes a <see cref="BorderEndPoint"/>.
         /// </summary>
-        /// <param name="number"> The unique number of the <see cref="BorderEndPoint"/> to remove. </param>
+        /// <param name="number"> The unique indentifying number of the <see cref="BorderEndPoint"/> to remove. </param>
         void RemoveEndPoint(int number);
 
         /// <summary>
-        /// Get the list with <see cref="BorderEndPoints"/>.
+        /// Get the list with <see cref="BorderEndPoint"/>.
         /// </summary>
-        /// <returns> The list with <see cref="BorderEndPoints"/>. </returns>
+        /// <returns> The list with <see cref="BorderEndPoint"/>. </returns>
         List<BorderEndPoint> GetBorderEndPoints();
+
+        /// <summary>
+        /// Get the list with <see cref="CountryBorder"/>.
+        /// </summary>
+        /// <returns> The list with <see cref="CountryBorder"/>. </returns>
+        List<CountryBorder> GetCountryBorders();
+
+        /// <summary>
+        /// Remove a <see cref="CountryBorder"/> from the list.
+        /// </summary>
+        /// <param name="numbers"> The numbers of the two <see cref="BorderEndPoint"/> for the <see cref="CountryBorder"/> to remove. </param>
+        void RemoveCountryBorder(int[] numbers);
     }
 }

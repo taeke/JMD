@@ -61,11 +61,38 @@ namespace DrawMap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The CountryBorder with these two BorderEndPoints allready excists..
+        /// </summary>
+        internal static string BORDER_ALLREADY_EXCISTS {
+            get {
+                return ResourceManager.GetString("BORDER_ALLREADY_EXCISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided numbers for the border are not found..
+        /// </summary>
+        internal static string BORDER_DOES_NOT_EXCIST {
+            get {
+                return ResourceManager.GetString("BORDER_DOES_NOT_EXCIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The provided number for the BorderEndPoint is not found..
         /// </summary>
         internal static string BORDERENDPOINT_DOES_NOT_EXCIST {
             get {
                 return ResourceManager.GetString("BORDERENDPOINT_DOES_NOT_EXCIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The endpoint can not be delete it is part of a CountryBorder..
+        /// </summary>
+        internal static string CANNOT_DELETE_ENDPOINT_BORDER {
+            get {
+                return ResourceManager.GetString("CANNOT_DELETE_ENDPOINT_BORDER", resourceCulture);
             }
         }
         
@@ -84,6 +111,15 @@ namespace DrawMap {
         internal static string CHANGES_BUT_NOT_IGNORE {
             get {
                 return ResourceManager.GetString("CHANGES_BUT_NOT_IGNORE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Countryborders may not intersect..
+        /// </summary>
+        internal static string COUNTRYBORDERS_INTERSECT {
+            get {
+                return ResourceManager.GetString("COUNTRYBORDERS_INTERSECT", resourceCulture);
             }
         }
         
@@ -129,6 +165,24 @@ namespace DrawMap {
         internal static string MALFORMED_XML {
             get {
                 return ResourceManager.GetString("MALFORMED_XML", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first number for the BorderEndPoints is greater as the second BorderEndPoint..
+        /// </summary>
+        internal static string NUMBER1_GREATER_NUMBER2 {
+            get {
+                return ResourceManager.GetString("NUMBER1_GREATER_NUMBER2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The numbers can&apos;t be the same..
+        /// </summary>
+        internal static string NUMBERS_ARE_THE_SAME {
+            get {
+                return ResourceManager.GetString("NUMBERS_ARE_THE_SAME", resourceCulture);
             }
         }
     }

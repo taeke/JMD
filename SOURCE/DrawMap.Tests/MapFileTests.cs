@@ -375,6 +375,21 @@
         public class TheAddBorderEndPointMethod : MapFileTests
         {
             /// <summary>
+            /// Test if calling AddBorderEndPoint sets MapChanged to true.
+            /// </summary>
+            [TestMethod]
+            public void ShouldSetMapChangedTrue()
+            {
+                // Arange
+
+                // Act
+                int number = this.mapFiles.AddBorderEndPoint(1, 1);
+
+                // Assert the mock is configureted to return 1.
+                Assert.AreEqual(true, this.mapFiles.MapChanged);
+            }
+
+            /// <summary>
             /// Test if calling AddBordEndPoint returns the number we configured in the mock.
             /// </summary>
             [TestMethod]
@@ -391,6 +406,129 @@
         }
 
         /// <summary>
+        /// Tests for the AddBorder method.
+        /// </summary>
+        [TestClass]
+        public class TheAddCountryBorderMethod : MapFileTests
+        {
+            /// <summary>
+            /// Test if calling AddBorder sets MapChanged to true.
+            /// </summary>
+            [TestMethod]
+            public void ShouldSetMapChangedTrue()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
+                numbers[1] = this.mapFiles.AddBorderEndPoint(2, 2);
+
+                // Act
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Assert the mock is configureted to return 1.
+                Assert.AreEqual(true, this.mapFiles.MapChanged);
+            }
+
+            /// <summary>
+            /// Test if calling AddCountryBorder throws an ArgumentException if both numbers are the same.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBothNumbersAreSame()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
+                numbers[1] = numbers[0];
+
+                // Act
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountryBorder throws an ArgumentException if same border allready is added.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfSameBorderAllreadyAdded()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
+                numbers[1] = this.mapFiles.AddBorderEndPoint(2, 2);
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Act
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountryBorder throws an ArgumentException if the first number is higher as the second.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfNumbersAreNotInTheRightOrder()
+            {
+                // Arange
+                int number1 = this.mapFiles.AddBorderEndPoint(1, 1);
+                int number2 = this.mapFiles.AddBorderEndPoint(2, 2);
+                int[] numbers = new int[2];
+                numbers[0] = number2;
+                numbers[1] = number1;
+
+                // Act
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountryBorder throws an ArgumentException if one of the BorderEndPoints does not excist.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfOneOfTheBorderEndPointsDoNoExcist()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
+                numbers[1] = 2;
+
+                // Act
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountryBorder throws an ArgumentException if the new CountryBorder intersects with another one.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBorderIntersectsWithOtherBorder()
+            {
+                // Arange
+                int[] numbers1 = new int[2];
+                numbers1[0] = this.mapFiles.AddBorderEndPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderEndPoint(20, 20);
+                this.mapFiles.AddCountryBorder(numbers1);
+
+                int[] numbers2 = new int[2];
+                numbers2[0] = this.mapFiles.AddBorderEndPoint(10, 20);
+                numbers2[1] = this.mapFiles.AddBorderEndPoint(20, 10);
+
+                // Act
+                this.mapFiles.AddCountryBorder(numbers2);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+        }
+        
+        /// <summary>
         /// The tests for the RemoveEndPoint method.
         /// </summary>
         [TestClass]
@@ -406,6 +544,24 @@
 
                 // Act
                 this.mapFiles.RemoveEndPoint(5);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling RemoveEndPoint while the BorderEndPoint is part of an excisting CountryBorder throws an ArgumentException.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfEndPointIsPartOfCountryBorder()
+            {
+                // Arange
+                int pointToRemove = this.mapFiles.AddBorderEndPoint(10, 10);
+                int secondPoint = this.mapFiles.AddBorderEndPoint(20, 20);
+                this.mapFiles.AddCountryBorder(new int[] { pointToRemove, secondPoint });
+
+                // Act
+                this.mapFiles.RemoveEndPoint(pointToRemove);
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.

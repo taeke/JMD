@@ -20,25 +20,65 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
             <Canvas x:Name="DrawingSurface"  MouseDown="DrawingSurface_MouseDown" Background="White"/>
             <Border Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="Gray"/>
             <StackPanel Grid.Column="1">
-                <TextBlock Margin="5,5,5,0">BorderEndPoints</TextBlock>
-                <Grid Grid.Column="1">
+                <TextBlock Margin="5,5,5,0">What to draw</TextBlock>
+                <RadioButton Margin="5" x:Name="ShowBorderEndPointTools" GroupName="DrawingTools" Content="BorderEndPoints" IsChecked="True" Checked="DrawingTools_Checked" />
+                <RadioButton Margin="5" x:Name="ShowBorderTools" GroupName="DrawingTools" Content="Borders" Checked="DrawingTools_Checked"/>
+
+                <Grid Grid.Column="1" x:Name="BorderEndPointsGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox Margin="5" x:Name="BorderEndPoints" SelectionChanged="BorderEndPoints_SelectionChanged" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Border BorderThickness="0,1,0,0" BorderBrush="Gray" Grid.ColumnSpan="2"/>
+                    <TextBlock Margin="5,5,5,0">BorderEndPoints</TextBlock>
+                    <ComboBox Grid.Row="1" Margin="5" x:Name="BorderEndPoints" SelectionChanged="BorderEndPoints_SelectionChanged" >
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <Label Content="{Binding Number}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button x:Name="Delete" Grid.Column="1" Margin="5" Content="Delete" Click="Delete_Click"/>
+                    <Button Grid.Row="1" x:Name="DeleteBorderEndPoint" Grid.Column="1" Margin="5" Content="Delete" Click="DeleteBorderEndPoint_Click"/>
+                </Grid>
+
+                <Grid x:Name="BordersGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Border BorderThickness="0,1,0,0" BorderBrush="Gray" Grid.ColumnSpan="2"/>
+                    <TextBlock Margin="5,5,5,0">Border end point 1</TextBlock>
+                    <TextBlock Grid.Column="1" Margin="5,5,5,0">Border end point 2</TextBlock>
+                    <ComboBox Grid.Row="1" Margin="5" x:Name="BorderEndPoint1" SelectionChanged="BorderEndPoint1_SelectionChanged" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Label Visibility="{Binding VisibleIn1}" Content="{Binding Number}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox Grid.Row="1" Margin="5" x:Name="BorderEndPoint2" Grid.Column="1" SelectionChanged="BorderEndPoint2_SelectionChanged" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Label Visibility="{Binding VisibleIn2}" Content="{Binding Number}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Margin="5" x:Name="CreateCountryBorder" Content="Create" Grid.Row="2" IsEnabled="False" Click="CreateCountryBorder_Click"/>
+                    <Button Margin="5" x:Name="DeleteCountryBorder" Content="Delete" Grid.Row="2" Grid.Column="1" IsEnabled="False" Click="DeleteCountryBorder_Click"/>
                 </Grid>
             </StackPanel>
         </Grid>

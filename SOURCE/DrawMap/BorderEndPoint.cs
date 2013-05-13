@@ -4,7 +4,7 @@
     using DrawMap.Interface;
 
     /// <summary>
-    /// An endpoint on a border.
+    /// An endpoint on a <see cref="CountryBorder"/>.
     /// </summary>
     [Serializable]
     public class BorderEndPoint
@@ -25,7 +25,7 @@
         private int number;
 
         /// <summary>
-        /// parameter less constructor is needed for serializing.
+        /// Parameter less constructor is needed for serializing.
         /// </summary>
         public BorderEndPoint()
         {
@@ -36,7 +36,7 @@
         /// </summary>
         /// <param name="x"> the X coordinant </param>
         /// <param name="y"> the Y coordinant </param>
-        /// <param name="number"> the unique number for this instance. </param>
+        /// <param name="number"> The unique indentifying number for this instance. </param>
         public BorderEndPoint(double x, double y, int number)
         {
             this.x = x;
@@ -77,7 +77,7 @@
         }
 
         /// <summary>
-        /// Unique number for this BorderEndPoint.
+        /// Unique indentifying number for this instance.
         /// </summary>
         public int Number
         {

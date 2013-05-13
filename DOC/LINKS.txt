@@ -6,3 +6,6 @@ http://social.msdn.microsoft.com/forums/en-US/wpf/thread/ad232a54-5ec2-4393-a281
 
 Waar moet de UnityContainer gecreeërd worden?
 http://blog.ploeh.dk/2011/07/28/CompositionRoot/
+
+Intersection of lines
+http://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
