@@ -9,3 +9,6 @@ http://blog.ploeh.dk/2011/07/28/CompositionRoot/
 
 Intersection of lines
 http://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
+
+Intersection line and circle
+http://blog.csharphelper.com/2010/03/28/determine-where-a-line-intersects-a-circle-in-c.aspx

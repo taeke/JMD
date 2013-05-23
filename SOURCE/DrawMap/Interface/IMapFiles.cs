@@ -49,31 +49,38 @@
         void Open(string fileName);
 
         /// <summary>
-        /// Adds a new <see cref="BorderEndPoint"/>.
+        /// Adds a new <see cref="BorderPoint"/>.
         /// </summary>
         /// <param name="X"> the X coördinant. </param>
         /// <param name="Y"> the Y coördinant. </param>
-        /// <returns> The unique indentifying number of the <see cref="BorderEndPoint"/>. </returns>
-        int AddBorderEndPoint(double x, double y);
+        /// <returns> The unique indentifying number of the <see cref="BorderPoint"/>. </returns>
+        int AddBorderPoint(double x, double y);
 
         /// <summary>
         /// Adds a new <see cref="CountryBorder"/>
         /// </summary>
-        /// <param name="Number1"> Unique indentifying number of the first <see cref="BorderEndPoint"/></param>
-        /// <param name="Number2"> Unique indentifying number of the second <see cref="BorderEndPoint"/></param>
-        void AddCountryBorder(int[] numbers);
+        /// <param name="Number1"> Unique indentifying number of the first <see cref="BorderPoint"/></param>
+        /// <param name="Number2"> Unique indentifying number of the second <see cref="BorderPoint"/></param>
+        void AddCountryBorder(int[] borderEndPointNumbers);
 
         /// <summary>
-        /// Removes a <see cref="BorderEndPoint"/>.
+        /// Splits an excisting <see cref="BorderPart"/> up in two. Creates an new BorderPart and edits the other to give it the new BorderPoint.
         /// </summary>
-        /// <param name="number"> The unique indentifying number of the <see cref="BorderEndPoint"/> to remove. </param>
-        void RemoveEndPoint(int number);
+        /// <param name="borderPointNumbers"> The original <see cref="BorderPoint"/> numbers for the original <see cref="BorderPart"/></param>
+        /// <param name="borderPoint"> The new <see cref="BorderPoint"/> which is the split point. </param>
+        void InsertBorderPoint(int[] borderPointNumbers, int borderPoint);
 
         /// <summary>
-        /// Get the list with <see cref="BorderEndPoint"/>.
+        /// Removes a <see cref="BorderPoint"/>.
         /// </summary>
-        /// <returns> The list with <see cref="BorderEndPoint"/>. </returns>
-        List<BorderEndPoint> GetBorderEndPoints();
+        /// <param name="number"> The unique indentifying number of the <see cref="BorderPoint"/> to remove. </param>
+        void RemoveBorderPoint(int number);
+
+        /// <summary>
+        /// Get the list with <see cref="BorderPoint"/>.
+        /// </summary>
+        /// <returns> The list with <see cref="BorderPoint"/>. </returns>
+        List<BorderPoint> GetBorderPoints();
 
         /// <summary>
         /// Get the list with <see cref="CountryBorder"/>.
@@ -84,7 +91,7 @@
         /// <summary>
         /// Remove a <see cref="CountryBorder"/> from the list.
         /// </summary>
-        /// <param name="numbers"> The numbers of the two <see cref="BorderEndPoint"/> for the <see cref="CountryBorder"/> to remove. </param>
+        /// <param name="numbers"> The numbers of the two <see cref="BorderPoint"/> for the <see cref="CountryBorder"/> to remove. </param>
         void RemoveCountryBorder(int[] numbers);
     }
 }

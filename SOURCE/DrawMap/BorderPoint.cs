@@ -7,7 +7,7 @@
     /// An endpoint on a <see cref="CountryBorder"/>.
     /// </summary>
     [Serializable]
-    public class BorderEndPoint
+    public class BorderPoint
     {
         /// <summary>
         /// Backing field for X.
@@ -27,7 +27,7 @@
         /// <summary>
         /// Parameter less constructor is needed for serializing.
         /// </summary>
-        public BorderEndPoint()
+        public BorderPoint()
         {
         }
 
@@ -37,7 +37,7 @@
         /// <param name="x"> the X coordinant </param>
         /// <param name="y"> the Y coordinant </param>
         /// <param name="number"> The unique indentifying number for this instance. </param>
-        public BorderEndPoint(double x, double y, int number)
+        public BorderPoint(double x, double y, int number)
         {
             this.x = x;
             this.y = y;

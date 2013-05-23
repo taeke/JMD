@@ -88,6 +88,15 @@ namespace DrawMap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The BorderPart with the two BorderPoints allready excists..
+        /// </summary>
+        internal static string BORDERPART_ALLREADY_EXCISTS {
+            get {
+                return ResourceManager.GetString("BORDERPART_ALLREADY_EXCISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The endpoint can not be delete it is part of a CountryBorder..
         /// </summary>
         internal static string CANNOT_DELETE_ENDPOINT_BORDER {
@@ -169,11 +178,11 @@ namespace DrawMap {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The first number for the BorderEndPoints is greater as the second BorderEndPoint..
+        ///   Looks up a localized string similar to The provided new number is allready in a BorderPart..
         /// </summary>
-        internal static string NUMBER1_GREATER_NUMBER2 {
+        internal static string NUMBER_ALLREADY_IN_PART {
             get {
-                return ResourceManager.GetString("NUMBER1_GREATER_NUMBER2", resourceCulture);
+                return ResourceManager.GetString("NUMBER_ALLREADY_IN_PART", resourceCulture);
             }
         }
         
@@ -183,6 +192,15 @@ namespace DrawMap {
         internal static string NUMBERS_ARE_THE_SAME {
             get {
                 return ResourceManager.GetString("NUMBERS_ARE_THE_SAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first number for the BorderEndPoints is greater as the second BorderEndPoint..
+        /// </summary>
+        internal static string NUMBERS_NOT_IN_RIGHT_ORDER {
+            get {
+                return ResourceManager.GetString("NUMBERS_NOT_IN_RIGHT_ORDER", resourceCulture);
             }
         }
     }

@@ -4,7 +4,7 @@
     using System.Windows.Shapes;
 
     /// <summary>
-    /// Storing a <see cref="BorderEndPoint"/> and its visual representation.
+    /// Storing a <see cref="BorderPoint"/> which is an endpoint and its visual representation.
     /// </summary>
     public class BorderEndPointItem
     {
@@ -24,7 +24,7 @@
         }
 
         /// <summary>
-        /// The unique indetifying number given to this point by the AddBorderEndPoint
+        /// The unique indetifying number given to this point by the AddBorderPoint
         /// </summary>
         public int Number { get; private set; }
 

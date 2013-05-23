@@ -383,9 +383,9 @@
                 // Arange
 
                 // Act
-                int number = this.mapFiles.AddBorderEndPoint(1, 1);
+                int number = this.mapFiles.AddBorderPoint(1, 1);
 
-                // Assert the mock is configureted to return 1.
+                // Assert.
                 Assert.AreEqual(true, this.mapFiles.MapChanged);
             }
 
@@ -398,7 +398,7 @@
                 // Arange
 
                 // Act
-                int number = this.mapFiles.AddBorderEndPoint(1, 1);
+                int number = this.mapFiles.AddBorderPoint(1, 1);
 
                 // Assert the mock is configureted to return 1.
                 Assert.AreEqual(1, number);
@@ -419,8 +419,8 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
-                numbers[1] = this.mapFiles.AddBorderEndPoint(2, 2);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
 
                 // Act
                 this.mapFiles.AddCountryBorder(numbers);
@@ -437,7 +437,7 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
                 numbers[1] = numbers[0];
 
                 // Act
@@ -455,8 +455,8 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
-                numbers[1] = this.mapFiles.AddBorderEndPoint(2, 2);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
                 this.mapFiles.AddCountryBorder(numbers);
 
                 // Act
@@ -473,8 +473,8 @@
             public void ShouldThrowExceptionIfNumbersAreNotInTheRightOrder()
             {
                 // Arange
-                int number1 = this.mapFiles.AddBorderEndPoint(1, 1);
-                int number2 = this.mapFiles.AddBorderEndPoint(2, 2);
+                int number1 = this.mapFiles.AddBorderPoint(1, 1);
+                int number2 = this.mapFiles.AddBorderPoint(2, 2);
                 int[] numbers = new int[2];
                 numbers[0] = number2;
                 numbers[1] = number1;
@@ -494,7 +494,7 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderEndPoint(1, 1);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
                 numbers[1] = 2;
 
                 // Act
@@ -512,13 +512,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderEndPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderEndPoint(20, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderPoint(20, 20);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
-                numbers2[0] = this.mapFiles.AddBorderEndPoint(10, 20);
-                numbers2[1] = this.mapFiles.AddBorderEndPoint(20, 10);
+                numbers2[0] = this.mapFiles.AddBorderPoint(10, 20);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 10);
 
                 // Act
                 this.mapFiles.AddCountryBorder(numbers2);
@@ -527,7 +527,7 @@
                 // Assertion is done bij ExpectedException attribute.
             }
         }
-        
+
         /// <summary>
         /// The tests for the RemoveEndPoint method.
         /// </summary>
@@ -543,7 +543,7 @@
                 // Arange
 
                 // Act
-                this.mapFiles.RemoveEndPoint(5);
+                this.mapFiles.RemoveBorderPoint(5);
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
@@ -556,12 +556,12 @@
             public void ShouldThrowExceptionIfEndPointIsPartOfCountryBorder()
             {
                 // Arange
-                int pointToRemove = this.mapFiles.AddBorderEndPoint(10, 10);
-                int secondPoint = this.mapFiles.AddBorderEndPoint(20, 20);
+                int pointToRemove = this.mapFiles.AddBorderPoint(10, 10);
+                int secondPoint = this.mapFiles.AddBorderPoint(20, 20);
                 this.mapFiles.AddCountryBorder(new int[] { pointToRemove, secondPoint });
 
                 // Act
-                this.mapFiles.RemoveEndPoint(pointToRemove);
+                this.mapFiles.RemoveBorderPoint(pointToRemove);
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
@@ -575,20 +575,146 @@
         public class TheGetBorderEndPointsMethod : MapFileTests
         {
             /// <summary>
-            /// A call to GetBorderEndPoints should return a list of <see cref="BorderEndPoint"/>.
+            /// A call to GetBorderEndPoints should return a list of <see cref="BorderPoint"/>.
             /// </summary>
             [TestMethod]
             public void ShouldReturnAListWithBordEndPoints()
             {
                 // Arange
-                this.mapFiles.AddBorderEndPoint(1, 1);
+                this.mapFiles.AddBorderPoint(1, 1);
 
                 // Act
-                var endPoints = this.mapFiles.GetBorderEndPoints();
+                var endPoints = this.mapFiles.GetBorderPoints();
 
                 // Assert
                 Assert.IsNotNull(endPoints);
                 Assert.AreEqual(1, endPoints.Count);
+            }
+        }
+
+        /// <summary>
+        /// The tests for the RemoveEndPoint method.
+        /// </summary>
+        [TestClass]
+        public class TheInsertBorderPointMethod : MapFileTests
+        {
+            /// <summary>
+            /// Test if calling InsertBorderPoint sets MapChanged to true.
+            /// </summary>
+            [TestMethod]
+            public void ShouldSetMapChangedTrue()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers[1] = this.mapFiles.AddBorderPoint(30, 30);
+                this.mapFiles.AddCountryBorder(numbers);
+                int number3 = this.mapFiles.AddBorderPoint(20, 20);
+
+                // Act
+                this.mapFiles.InsertBorderPoint(numbers, number3);
+
+                // Assert.
+                Assert.AreEqual(true, this.mapFiles.MapChanged);
+            }
+
+            /// <summary>
+            /// Test if calling addBorder throws an exception if the two endpoints are the same.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBothBorderEndPointNumbersAreSame()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[1] = numbers[0];
+                this.mapFiles.AddCountryBorder(numbers);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+
+                // Act
+                this.mapFiles.InsertBorderPoint(numbers, number3);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddBorderPart throws an ArgumentException if the first number is higher as the second.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBorderEndPointNumbersAreNotInTheRightOrder()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[1] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[0] = this.mapFiles.AddBorderPoint(2, 2);
+                this.mapFiles.AddCountryBorder(numbers);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+
+                // Act
+                this.mapFiles.InsertBorderPoint(numbers, number3);
+
+                // Assert.
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddBorderPart throws an ArgumentException if the first number is higher as the second.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBorderPointNumbersAreNotInTheRightOrder()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                int number2 = this.mapFiles.AddBorderPoint(2, 2);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+                numbers[1] = number3;
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Act
+                this.mapFiles.InsertBorderPoint(numbers, number2);
+
+                // Assert.
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddBorderPart throws an ArgumentException if the CountryBorder does not excist.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfCountryBorderDoesNotExcist()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+
+                // Act
+                this.mapFiles.InsertBorderPoint(numbers, number3);
+
+                // Assert.
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddBorderPart throws an ArgumentException if the new number allready is part of a borderpart does not excist.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfNumberAllreadyInBorder()
+            {
+                // Arange
+                int[] numbers = new int[2];
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
+                this.mapFiles.AddCountryBorder(numbers);
+
+                // Act
+                this.mapFiles.InsertBorderPoint(numbers, numbers[1]);
+
+                // Assert.
+                // Assertion is done bij ExpectedException attribute.
             }
         }
     }

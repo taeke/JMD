@@ -7,12 +7,13 @@
     /// <summary>
     /// The geomerty of a map.
     /// </summary>
+    [Serializable]
     public class Map
     {
         /// <summary>
         /// Backing filed for BorderEndpoints.
         /// </summary>
-        private List<BorderEndPoint> borderEndPoints = new List<BorderEndPoint>();
+        private List<BorderPoint> borderPoints = new List<BorderPoint>();
 
         /// <summary>
         /// Backing filed for Borders.
@@ -27,18 +28,18 @@
         }
 
         /// <summary>
-        /// The <see cref="BorderEndPoint"/> instances of all the <see cref="CountryBorder"/> instances.
+        /// The <see cref="BorderPoint"/> instances of all the <see cref="CountryBorder"/> instances.
         /// </summary>
-        public List<BorderEndPoint> BorderEndpoints
+        public List<BorderPoint> BorderPoints
         {
             get 
             { 
-                return this.borderEndPoints; 
+                return this.borderPoints; 
             }
 
             set
             {
-                this.borderEndPoints = value;
+                this.borderPoints = value;
             }
         }
 

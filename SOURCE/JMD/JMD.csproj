@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="BorderEndPointItem.cs" />
     <Compile Include="BorderItem.cs" />
+    <Compile Include="BorderPointItem.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

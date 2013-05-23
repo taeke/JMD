@@ -1,6 +1,9 @@
 TODO
 ====
-- BorderEndPoint1_SelectionChanged zit veel dubbele code met nummer 2 in. Kijken of dit weg kan.
+- Eigen List voor BorderEndPointItem en die als source voor de dropdowns gebruiken.
+- Benamingen controleren.
+- GetSelectedLineForDraw lijkt wel erg veel op GetSelectedBorderItem.
+- Drawingsurface schalen als form schaalt want nu lijkt deze onder of over de controls heen getekend te worden als je het form schaalt.
 
 DONE
 ====
@@ -33,3 +36,14 @@ DONE
 - Opslaan lijnen en weer inlezen.
 - EndPoint niet verwijderen als onderdeel van een lijn.
 - Geen punten tekenen als endpoint tools niet getoond worden.
+- BorderEndPoint1_SelectionChanged zit veel dubbele code met nummer 2 in. Kijken of dit weg kan.
+- Controleren of er initieel ook al een BorderPart wordt aangemaakt.
+- Controlleren of eerste endpoint line altijd eerste borderpoint is bij aanmaken of anders zo maken.
+- Weer vereenvoudige maken nieuwe line.
+- InsertBorderPoint maken.
+- Selectie kleuren correct bijwerken.
+- Opniew inlezen.
+- Als de muis drawingsurface verlaat annuleren en oud situatie herstellen.
+- Intersectie bij verslepen.
+- Intersectie ook met punten.
+- Geen nieuw endpoint op een lijn.
