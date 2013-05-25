@@ -123,6 +123,9 @@
   <data name="BORDERPART_ALLREADY_EXCISTS" xml:space="preserve">
     <value>The BorderPart with the two BorderPoints allready excists.</value>
   </data>
+  <data name="BORDERS_ARE_NOT_COUNTRY" xml:space="preserve">
+    <value>The borders do not form a valid country.</value>
+  </data>
   <data name="BORDER_ALLREADY_EXCISTS" xml:space="preserve">
     <value>The CountryBorder with these two BorderEndPoints allready excists.</value>
   </data>
@@ -155,6 +158,15 @@
   </data>
   <data name="MALFORMED_XML" xml:space="preserve">
     <value>The xml file does not seem to be a JMD.xml file.</value>
+  </data>
+  <data name="NAMES_ARE_THE_SAME" xml:space="preserve">
+    <value>The provided Country Name allready excists.</value>
+  </data>
+  <data name="NAME_DOES_NOT_EXICST" xml:space="preserve">
+    <value>The name does not excist.</value>
+  </data>
+  <data name="NAME_EMPTY" xml:space="preserve">
+    <value>The name can not be empty.</value>
   </data>
   <data name="NUMBERS_ARE_THE_SAME" xml:space="preserve">
     <value>The numbers can't be the same.</value>

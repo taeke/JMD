@@ -59,9 +59,15 @@
         /// <summary>
         /// Adds a new <see cref="CountryBorder"/>
         /// </summary>
-        /// <param name="Number1"> Unique indentifying number of the first <see cref="BorderPoint"/></param>
-        /// <param name="Number2"> Unique indentifying number of the second <see cref="BorderPoint"/></param>
+        /// <param name="borderEndPointNumbers"> Unique indentifying numbers of the <see cref="BorderPoint"/> for the endpoints. </param>
         void AddCountryBorder(int[] borderEndPointNumbers);
+
+        /// <summary>
+        /// Adds a new <see cref="Country"/>
+        /// </summary>
+        /// <param name="countriesBorderEndPointNumbers"> Unique indentifying numbers of the <see cref="BorderPoint"/> for the endpoints of all the 
+        /// <see cref="CountryBorder"/> instances which form the Country. </param>
+        void AddCountry(string name, List<int[]> countriesBorderEndPointNumbers);
 
         /// <summary>
         /// Splits an excisting <see cref="BorderPart"/> up in two. Creates an new BorderPart and edits the other to give it the new BorderPoint.
@@ -77,6 +83,18 @@
         void RemoveBorderPoint(int number);
 
         /// <summary>
+        /// Remove a <see cref="CountryBorder"/> from the list.
+        /// </summary>
+        /// <param name="numbers"> The numbers of the two <see cref="BorderPoint"/> for the <see cref="CountryBorder"/> to remove. </param>
+        void RemoveCountryBorder(int[] numbers);
+
+        /// <summary>
+        /// Remove a <see cref="Country"/> from the list.
+        /// </summary>
+        /// <param name="name"> The name of the <see cref="Country"/> to remove. </param>
+        void RemoveCountry(string name);
+
+        /// <summary>
         /// Get the list with <see cref="BorderPoint"/>.
         /// </summary>
         /// <returns> The list with <see cref="BorderPoint"/>. </returns>
@@ -89,9 +107,9 @@
         List<CountryBorder> GetCountryBorders();
 
         /// <summary>
-        /// Remove a <see cref="CountryBorder"/> from the list.
+        /// Get the list with <see cref="Country"/>.
         /// </summary>
-        /// <param name="numbers"> The numbers of the two <see cref="BorderPoint"/> for the <see cref="CountryBorder"/> to remove. </param>
-        void RemoveCountryBorder(int[] numbers);
+        /// <returns> The list with <see cref="Country"/>. </returns>
+        List<Country> GetCountries();
     }
 }

@@ -529,6 +529,238 @@
         }
 
         /// <summary>
+        /// The tests for the AddCountry method.
+        /// </summary>
+        [TestClass]
+        public class TheAddCountryMethod : MapFileTests
+        {
+            /// <summary>
+            /// Test if calling AddCountryBorder throws an ArgumentException if the new CountryBorder intersects with another one.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+            public void ShouldThrowExceptionIfCountriesBorderEndPointNumbersIsNull()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.AddCountry("Country 1", null);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountry throws an ArgumentException if the country allready excists with the same borders.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfCountriesWithSameBordersAllReadyAdded()
+            {
+                // Arange
+                int[] numbers1 = new int[2];
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                this.mapFiles.AddCountryBorder(numbers1);
+
+                int[] numbers2 = new int[2];
+                numbers2[0] = numbers1[1];
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                this.mapFiles.AddCountryBorder(numbers2);
+
+                int[] numbers3 = new int[2];
+                numbers3[0] = numbers1[0];
+                numbers3[1] = numbers2[1];
+                this.mapFiles.AddCountryBorder(numbers3);
+
+                List<int[]> borders = new List<int[]>();
+                borders.Add(numbers1);
+                borders.Add(numbers2);
+                borders.Add(numbers3);
+                this.mapFiles.AddCountry("country 1", borders);
+
+                // Act
+                this.mapFiles.AddCountry("country 2", borders);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountry throws an ArgumentException if one of the borders does not excist.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBorderDoesNotExcist()
+            {
+                // Arange
+                int[] numbers1 = new int[2];
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                this.mapFiles.AddCountryBorder(numbers1);
+
+                int[] numbers2 = new int[2];
+                numbers2[0] = numbers1[1];
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                this.mapFiles.AddCountryBorder(numbers2);
+
+                int[] numbers3 = new int[2];
+                numbers3[0] = numbers1[0];
+                numbers3[1] = numbers2[1];
+                this.mapFiles.AddCountryBorder(numbers3);
+
+                List<int[]> borders = new List<int[]>();
+                borders.Add(numbers1);
+                borders.Add(numbers2);
+                borders.Add(new int[2] { 8, 9 });
+
+                // Act
+                this.mapFiles.AddCountry("country 1", borders);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountry throws an ArgumentException if the borders don't form a clossed loop.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBorderDoesNotFormCountry()
+            {
+                // Arange
+                int[] numbers1 = new int[2];
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                this.mapFiles.AddCountryBorder(numbers1);
+
+                int[] numbers2 = new int[2];
+                numbers2[0] = numbers1[1];
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                this.mapFiles.AddCountryBorder(numbers2);
+
+                List<int[]> borders = new List<int[]>();
+                borders.Add(numbers1);
+                borders.Add(numbers2);
+
+                // Act
+                this.mapFiles.AddCountry("country 1", borders);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountry throws an ArgumentException if the country allready excists with the same borders.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfNameIsEmpty()
+            {
+                // Arange
+                int[] numbers1 = new int[2];
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                this.mapFiles.AddCountryBorder(numbers1);
+
+                int[] numbers2 = new int[2];
+                numbers2[0] = numbers1[1];
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                this.mapFiles.AddCountryBorder(numbers2);
+
+                int[] numbers3 = new int[2];
+                numbers3[0] = numbers1[0];
+                numbers3[1] = numbers2[1];
+                this.mapFiles.AddCountryBorder(numbers3);
+
+                List<int[]> borders = new List<int[]>();
+                borders.Add(numbers1);
+                borders.Add(numbers2);
+                borders.Add(numbers3);
+
+                // Act
+                this.mapFiles.AddCountry(string.Empty, borders);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddCountry throws an ArgumentException if the country allready excists with the same name.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfCountryWithSameNameExcists()
+            {
+                // Arange
+                int[] numbers1 = new int[2];
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                this.mapFiles.AddCountryBorder(numbers1);
+
+                int[] numbers2 = new int[2];
+                numbers2[0] = numbers1[1];
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                this.mapFiles.AddCountryBorder(numbers2);
+
+                int[] numbers3 = new int[2];
+                numbers3[0] = numbers1[0];
+                numbers3[1] = numbers2[1];
+                this.mapFiles.AddCountryBorder(numbers3);
+
+                int[] numbers4 = new int[2];
+                numbers4[0] = numbers1[0];
+                numbers4[1] = this.mapFiles.AddBorderPoint(20, 10);
+
+                int[] numbers5 = new int[2];
+                numbers5[0] = numbers2[1];
+                numbers5[1] = numbers4[1];
+
+                List<int[]> borders1 = new List<int[]>();
+                borders1.Add(numbers1);
+                borders1.Add(numbers2);
+                borders1.Add(numbers3);
+                this.mapFiles.AddCountry("country 1", borders1);
+
+                List<int[]> borders2 = new List<int[]>();
+                borders2.Add(numbers4);
+                borders2.Add(numbers5);
+                borders2.Add(numbers3);
+
+                // Act
+                this.mapFiles.AddCountry("country 1", borders2);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Testing if calling AddCountry runs without errors if all the provided information is correct.
+            /// </summary>
+            [TestMethod]
+            public void ShouldAddACountryIfEverythingIsValid()
+            {
+                // Arange
+                int[] numbers1 = new int[2];
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                this.mapFiles.AddCountryBorder(numbers1);
+
+                int[] numbers2 = new int[2];
+                numbers2[0] = numbers1[1];
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                this.mapFiles.AddCountryBorder(numbers2);
+
+                int[] numbers3 = new int[2];
+                numbers3[0] = numbers1[0];
+                numbers3[1] = numbers2[1];
+                this.mapFiles.AddCountryBorder(numbers3);
+
+                List<int[]> borders = new List<int[]>();
+                borders.Add(numbers1);
+                borders.Add(numbers2);
+                borders.Add(numbers3);
+
+                // Act
+                this.mapFiles.AddCountry("Country 1", borders);
+            }
+        }
+
+        /// <summary>
         /// The tests for the RemoveEndPoint method.
         /// </summary>
         [TestClass]
@@ -562,6 +794,43 @@
 
                 // Act
                 this.mapFiles.RemoveBorderPoint(pointToRemove);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+        }
+
+        /// <summary>
+        /// The tests for the RemoveCountry method.
+        /// </summary>
+        [TestClass]
+        public class TheRemoveCountryMethod : MapFileTests
+        {
+            /// <summary>
+            /// Test if calling RemoveCountry  throws an ArgumentException.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfNameIsEmpty()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.RemoveCountry(string.Empty);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling RemoveCountry  throws an ArgumentException.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfNameNotExcists()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.RemoveCountry("DoesNotExcist");
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.

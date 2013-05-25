@@ -97,6 +97,15 @@ namespace DrawMap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The borders do not form a valid country..
+        /// </summary>
+        internal static string BORDERS_ARE_NOT_COUNTRY {
+            get {
+                return ResourceManager.GetString("BORDERS_ARE_NOT_COUNTRY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The endpoint can not be delete it is part of a CountryBorder..
         /// </summary>
         internal static string CANNOT_DELETE_ENDPOINT_BORDER {
@@ -174,6 +183,33 @@ namespace DrawMap {
         internal static string MALFORMED_XML {
             get {
                 return ResourceManager.GetString("MALFORMED_XML", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name does not excist..
+        /// </summary>
+        internal static string NAME_DOES_NOT_EXICST {
+            get {
+                return ResourceManager.GetString("NAME_DOES_NOT_EXICST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name can not be empty..
+        /// </summary>
+        internal static string NAME_EMPTY {
+            get {
+                return ResourceManager.GetString("NAME_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided Country Name allready excists..
+        /// </summary>
+        internal static string NAMES_ARE_THE_SAME {
+            get {
+                return ResourceManager.GetString("NAMES_ARE_THE_SAME", resourceCulture);
             }
         }
         

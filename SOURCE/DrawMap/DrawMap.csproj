@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BorderPart.cs" />
+    <Compile Include="Country.cs" />
     <Compile Include="CountryBorder.cs" />
     <Compile Include="BorderPoint.cs" />
     <Compile Include="Interface\IMapFiles.cs" />

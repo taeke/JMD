@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Linq;
     using System.Windows;
@@ -46,7 +47,7 @@
         /// The list of <see cref="BorderItem"/>. Keeps track of the lines which form one countryborder en the unique indentifying
         /// numbers for these lines en countryborder.
         /// </summary>
-        private List<BorderItem> borderItems = new List<BorderItem>();
+        private ObservableCollection<BorderItem> borderItems = new ObservableCollection<BorderItem>();
 
         /// <summary>
         /// The list of <see cref="BorderPointItem"/>. Keeps track of the ellipses which form the points of a countryborder and the
@@ -59,6 +60,11 @@
         /// countryborder and the unique indentifying number for these points.
         /// </summary>
         private ObservableCollection<BorderEndPointItem> borderEndPointItems = new ObservableCollection<BorderEndPointItem>();
+
+        /// <summary>
+        /// The observableCollection of <see cref="CountryItem"/>. Keeps track of the Countries the user has added.
+        /// </summary>
+        private ObservableCollection<CountryItem> countryItems = new ObservableCollection<CountryItem>();
 
         /// <summary>
         /// If the user selects two borderEndPointItems in BorderEndPoint1 and BorderEndPoint2 for which a countryborder is created. This
@@ -88,7 +94,32 @@
             this.BorderEndPoints.ItemsSource = this.borderEndPointItems;
             this.BorderEndPoint1.ItemsSource = this.borderEndPointItems;
             this.BorderEndPoint2.ItemsSource = this.borderEndPointItems;
+            this.Borders.ItemsSource = this.borderItems;
+            this.Countries.ItemsSource = this.countryItems;
             this.BordersGrid.Visibility = Visibility.Collapsed;
+            this.CountriesGrid.Visibility = Visibility.Collapsed;
+            ((INotifyCollectionChanged)this.BordersForCountry.Items).CollectionChanged += this.BordersForCountry_CollectionChanged;
+        }
+
+        /// <summary>
+        /// The collection of borders for the country is changed so the list of visible borders in de dropdown 
+        /// must also change.
+        /// </summary>
+        /// <param name="sender"> The listbox with the borders for the country. </param>
+        /// <param name="e"> The NotifyCollectionChangedEventArgs instance. </param>
+        public void BordersForCountry_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            foreach (var item in this.Borders.Items)
+            {
+                ((BorderItem)item).VisibleInComboBox = Visibility.Visible;
+            }
+
+            foreach (var item in this.BordersForCountry.Items)
+            {
+                ((BorderItem)item).VisibleInComboBox = Visibility.Collapsed;
+            }
+
+            this.Borders.Items.Refresh();
         }
 
         /// <summary>
@@ -278,7 +309,7 @@
         private void DeleteBorderEndPoint_Click(object sender, RoutedEventArgs e)
         {
             BorderEndPointItem borderEndPointItem = (BorderEndPointItem)this.BorderEndPoints.SelectedItem;
-            if (this.borderItems.Find(b => b.Numbers.Contains(borderEndPointItem.Number)) == null)
+            if (this.borderItems.ToList().Find(b => b.Numbers.Contains(borderEndPointItem.Number)) == null)
             {
                 this.mapFiles.RemoveBorderPoint(borderEndPointItem.Number);
                 this.DrawingSurface.Children.Remove(borderEndPointItem.Ellipse);
@@ -353,6 +384,11 @@
                 this.BorderEndPointsGrid.Visibility = (bool)this.ShowBorderEndPointTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
             }
 
+            if (this.ShowCountryTools != null && this.CountriesGrid != null)
+            {
+                this.CountriesGrid.Visibility = (bool)this.ShowCountryTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+
             this.ReDraw();
         }
 
@@ -374,6 +410,145 @@
         private void BorderEndPoint2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.EndPointsForBorderSelectionChanged(this.BorderEndPoint2, this.BorderEndPoint1);
+        }
+
+        /// <summary>
+        /// The user clicked the AddBorder button.
+        /// </summary>
+        /// <param name="sender"> The clicked button. </param>
+        /// <param name="e"> The RoutedEventArgs instance. </param>
+        private void AddBorder_Click(object sender, RoutedEventArgs e)
+        {
+            this.BordersForCountry.Items.Add(this.Borders.SelectedItem);
+            this.Borders.SelectedItem = null;
+        }
+
+        /// <summary>
+        /// The selection of borders is changed.
+        /// </summary>
+        /// <param name="sender"> The combobox. </param>
+        /// <param name="e"> The SelectionChangedEventArgs instance. </param>
+        private void Borders_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.SetIsEnabledCountryControls();
+            this.ReDraw();
+        }
+
+        /// <summary>
+        /// The selection of borders for a country is changed.
+        /// </summary>
+        /// <param name="sender"> The listbox. </param>
+        /// <param name="e"> The SelectionChangedEventArgs instance. </param>
+        private void BordersForCountry_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.SetIsEnabledCountryControls();
+            this.ReDraw();
+        }
+
+        /// <summary>
+        /// The selection of countries is changed.
+        /// </summary>
+        /// <param name="sender"> The combobox. </param>
+        /// <param name="e"> The SelectionChangedEventArgs instance. </param>
+        private void Countries_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.SetIsEnabledCountryControls();
+            this.ClearCountryControls();
+            if (this.Countries.SelectedItem != null)
+            {
+                this.CountryName.Text = ((CountryItem)this.Countries.SelectedItem).Name;
+                foreach (var item in ((CountryItem)this.Countries.SelectedItem).BorderItems)
+                {
+                    this.BordersForCountry.Items.Add(item);
+                }
+            }
+
+            this.ReDraw();
+        }
+
+        /// <summary>
+        /// The user clicked the  DeleteBorderFromCountry button.
+        /// </summary>
+        /// <param name="sender"> The clicked button. </param>
+        /// <param name="e"> The RoutedEventArgs instance. </param>
+        private void DeleteBorderFromCountry_Click(object sender, RoutedEventArgs e)
+        {
+            ((BorderItem)this.BordersForCountry.SelectedItem).VisibleInComboBox = Visibility.Visible;
+            this.Borders.Items.Refresh();
+            this.BordersForCountry.Items.Remove(this.BordersForCountry.SelectedItem);
+        }
+
+        /// <summary>
+        /// The user clicked the AddCountry button.
+        /// </summary>
+        /// <param name="sender"> The button. </param>
+        /// <param name="e"> The RoutedEventArgs instance. </param>
+        private void AddCountry_Click(object sender, RoutedEventArgs e)
+        {
+            bool isOk = true;
+            if (this.CountryName.Text == string.Empty)
+            {
+                MessageBox.Show("The name of the country can not be empty");
+                isOk = false;
+            }
+
+            List<BorderItem> borderItemsForCountry = new List<BorderItem>();
+            foreach (var item in this.BordersForCountry.Items)
+            {
+                borderItemsForCountry.Add((BorderItem)item);
+            }
+
+            CountryItem countryItem = new CountryItem(this.CountryName.Text, borderItemsForCountry);
+            if (isOk && this.countryItems.ToList().Find(c => c.Name == countryItem.Name) != null)
+            {
+                MessageBox.Show("There is allready a country with this name in the list.");
+                isOk = false;
+            }
+
+            if (isOk && this.countryItems.ToList().Find(delegate(CountryItem i)
+            {
+                return countryItem.BorderItems.OrderBy(b1 => b1.Numbers[0]).ThenBy(b2 => b2.Numbers[1]).SequenceEqual(i.BorderItems.OrderBy(b1 => b1.Numbers[0]).ThenBy(b2 => b2.Numbers[1]));
+            }) != null)
+            {
+                MessageBox.Show("There is allready a country with these borders in the list");
+                isOk = false;
+            }
+
+            if (isOk && !this.AreBordersValidCountry())
+            {
+                MessageBox.Show("The borders do not form a valid country.");
+                isOk = false;
+            }
+
+            if (isOk)
+            {
+                this.countryItems.Add(countryItem);
+                this.Countries.SelectedItem = countryItem;
+                this.mapFiles.AddCountry(countryItem.Name, countryItem.BorderItems.Select(b => b.Numbers).ToList());
+            }
+        }
+
+        /// <summary>
+        /// The user clicked the DeleteCountry button.
+        /// </summary>
+        /// <param name="sender"> The button</param>
+        /// <param name="e"> The RoutedEventArgs instance. </param>
+        private void DeleteCountry_Click(object sender, RoutedEventArgs e)
+        {
+            this.mapFiles.RemoveCountry(((CountryItem)this.Countries.SelectedItem).Name);
+            this.countryItems.Remove((CountryItem)this.Countries.SelectedItem);
+            this.ClearCountryControls();
+        }
+
+        /// <summary>
+        /// The user clicked the NewCountry button.
+        /// </summary>
+        /// <param name="sender"> The button. </param>
+        /// <param name="e"> The RoutedEventArgs instance. </param>
+        private void NewCountry_Click(object sender, RoutedEventArgs e)
+        {
+            this.Countries.SelectedItem = null;
+            this.ClearCountryControls();
         }
 
         /// <summary>
@@ -450,7 +625,7 @@
                 Line line = (Line)this.hitResultsList.Find(r => r is Line);
                 if (line != null)
                 {
-                    BorderItem borderItem = this.borderItems.Find(b => b.Lines.Keys.Contains(line));
+                    BorderItem borderItem = this.borderItems.ToList().Find(b => b.Lines.Keys.Contains(line));
                     if (borderItem != null)
                     {
                         if (this.selectedBorderItem != null && this.selectedBorderItem == borderItem)
@@ -538,7 +713,7 @@
             }
 
             int[] numbers = this.GetNumbers();
-            return this.borderItems.Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]);
+            return this.borderItems.ToList().Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]);
         }
 
         /// <summary>
@@ -558,11 +733,11 @@
         private int[] GetNumbers()
         {
             int[] numbers = new int[2];
-            BorderEndPointItem[] borderEndPointItems = this.GetBorderEndPointItemsOrdered();
-            if (borderEndPointItems[0] != null && borderEndPointItems[1] != null)
+            BorderEndPointItem[] borderEndPointItemsLine = this.GetBorderEndPointItemsOrdered();
+            if (borderEndPointItemsLine[0] != null && borderEndPointItemsLine[1] != null)
             {
-                numbers[0] = borderEndPointItems[0].Number;
-                numbers[1] = borderEndPointItems[1].Number;
+                numbers[0] = borderEndPointItemsLine[0].Number;
+                numbers[1] = borderEndPointItemsLine[1].Number;
             }
 
             return numbers;
@@ -648,21 +823,69 @@
         /// </summary>
         private void ReDraw()
         {
-            List<Ellipse> ellipses = this.GetSelectedEllipsesForReDraw();
-            List<Line> lines = this.GetSelectedLineForReDraw();
+            List<Ellipse> ellipsesSelected = this.GetSelectedEllipsesForReDraw();
+            List<Ellipse> ellipsesCountry = this.GetEllipsesCountryForReDraw();
+            List<Line> linesSelected = this.GetSelectedLineForReDraw();
+            List<Line> linesCountry = this.GetCountryLinesForRedraw();
             foreach (var item in this.DrawingSurface.Children)
             {
                 if (item is Ellipse)
                 {
-                    ((Ellipse)item).Fill = ellipses != null && ellipses.Contains(item) ? this.SelectedBrush() : this.UnSelectedBrush();
-                    ((Ellipse)item).Stroke = ellipses != null && ellipses.Contains(item) ? this.SelectedBrush() : this.UnSelectedBrush();
+                    ((Ellipse)item).Fill = ellipsesSelected != null && ellipsesSelected.Contains(item) ? this.SelectedBrush() : this.UnSelectedBrush();
+                    ((Ellipse)item).Stroke = ellipsesSelected != null && ellipsesSelected.Contains(item) ? this.SelectedBrush() : this.UnSelectedBrush();
+                    ((Ellipse)item).Fill = ellipsesCountry != null && ellipsesCountry.Contains(item) ? this.CountryBrush() : ((Ellipse)item).Fill;
+                    ((Ellipse)item).Stroke = ellipsesCountry != null && ellipsesCountry.Contains(item) ? this.CountryBrush() : ((Ellipse)item).Stroke;
                 }
 
                 if (item is Line)
                 {
-                    ((Line)item).Stroke = lines != null && lines.Contains(item) ? this.SelectedBrush() : this.UnSelectedBrush();
+                    ((Line)item).Stroke = linesSelected != null && linesSelected.Contains(item) ? this.SelectedBrush() : this.UnSelectedBrush();
+                    ((Line)item).Stroke = linesCountry != null && linesCountry.Contains(item) ? this.CountryBrush() : ((Line)item).Stroke;
                 }
             }
+        }
+
+        /// <summary>
+        /// If there are one or more lines in a selected country return them.
+        /// </summary>
+        /// <returns> A list of lines which are part of a selected country. </returns>
+        private List<Line> GetCountryLinesForRedraw()
+        {
+            if (this.ShowCountryTools != null &&
+                (bool)this.ShowCountryTools.IsChecked &&
+                this.BordersForCountry != null)
+            {
+                List<Line> result = new List<Line>();
+                foreach (var item in this.BordersForCountry.Items)
+                {
+                    result.AddRange(((BorderItem)item).Lines.Keys.ToList());
+                }
+
+                return result;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// If there are one or more ellipses in a selected country return them.
+        /// </summary>
+        /// <returns> A list of Ellipse which are part of a selected Country. </returns>
+        private List<Ellipse> GetEllipsesCountryForReDraw()
+        {
+            List<Ellipse> result = new List<Ellipse>();
+            if (this.ShowCountryTools != null &&
+                (bool)this.ShowCountryTools.IsChecked &&
+                this.BordersForCountry != null)
+            {
+                foreach (var item in this.BordersForCountry.Items)
+                {
+                    this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)item).Numbers[0]).Ellipse, result);
+                    this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)item).Numbers[1]).Ellipse, result);
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -675,8 +898,16 @@
                 (bool)this.ShowBorderTools.IsChecked)
             {
                 int[] numbers = this.GetNumbers();
-                BorderItem borderItem = this.borderItems.Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]);
+                BorderItem borderItem = this.borderItems.ToList().Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]);
                 return borderItem == null ? null : borderItem.Lines.Keys.ToList();
+            }
+
+            if (this.ShowCountryTools != null &&
+                (bool)this.ShowCountryTools.IsChecked &&
+                this.Borders != null &&
+                this.Borders.SelectedItem != null)
+            {
+                return ((BorderItem)this.Borders.SelectedItem).Lines.Keys.ToList();
             }
 
             return null;
@@ -693,17 +924,39 @@
                 (bool)this.ShowBorderEndPointTools.IsChecked &&
                 this.BorderEndPoints != null)
             {
-                result.Add(this.BorderEndPoints.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoints.SelectedItem).Ellipse : null);
+                this.AddEllipse(this.BorderEndPoints.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoints.SelectedItem).Ellipse : null, result);
             }
 
             if (this.ShowBorderTools != null &&
                 (bool)this.ShowBorderTools.IsChecked)
             {
-                result.Add(this.BorderEndPoint1.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint1.SelectedItem).Ellipse : null);
-                result.Add(this.BorderEndPoint2.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint2.SelectedItem).Ellipse : null);
+                this.AddEllipse(this.BorderEndPoint1.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint1.SelectedItem).Ellipse : null, result);
+                this.AddEllipse(this.BorderEndPoint2.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint2.SelectedItem).Ellipse : null, result);
+            }
+
+            if (this.ShowCountryTools != null &&
+                (bool)this.ShowCountryTools.IsChecked &&
+                this.Borders != null &&
+                this.Borders.SelectedItem != null)
+            {
+                this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)this.Borders.SelectedItem).Numbers[0]).Ellipse, result);
+                this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)this.Borders.SelectedItem).Numbers[1]).Ellipse, result);
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Add a ellipse to the list of ellipses but only if the ellipse instance not is null.
+        /// </summary>
+        /// <param name="ellipse"> The ellipse to add or null. </param>
+        /// <param name="ellipses"> The list of ellipses. </param>
+        private void AddEllipse(Ellipse ellipse, List<Ellipse> ellipses)
+        {
+            if (ellipse != null)
+            {
+                ellipses.Add(ellipse);
+            }
         }
 
         /// <summary>
@@ -767,6 +1020,17 @@
         }
 
         /// <summary>
+        /// The brush for drawing country items.
+        /// </summary>
+        /// <returns> The Brush</returns>
+        private SolidColorBrush CountryBrush()
+        {
+            SolidColorBrush result = new SolidColorBrush();
+            result.Color = Colors.Blue;
+            return result;
+        }
+
+        /// <summary>
         /// Callback for testing if the user selected an allready drawn part.
         /// </summary>
         /// <param name="result"> The result list. </param>
@@ -810,8 +1074,8 @@
         /// <returns> The new BorderItem. </returns>
         private BorderItem CreateNewBorder()
         {
-            BorderEndPointItem[] borderEndPointItems = this.GetBorderEndPointItemsOrdered();
-            Line line = this.AddLineToDrawingSurface(borderEndPointItems[0].ClickedPoint, borderEndPointItems[1].ClickedPoint, true);
+            BorderEndPointItem[] borderEndPointItemsLine = this.GetBorderEndPointItemsOrdered();
+            Line line = this.AddLineToDrawingSurface(borderEndPointItemsLine[0].ClickedPoint, borderEndPointItemsLine[1].ClickedPoint, true);
             int[] numbers = this.GetNumbers();
             this.mapFiles.AddCountryBorder(numbers);
             BorderItem borderItem = new BorderItem(numbers, line, new int[2] { numbers[0], numbers[1] });
@@ -850,7 +1114,8 @@
                 this.ClearDrawing();
                 List<BorderPoint> borderPoints = this.mapFiles.GetBorderPoints();
                 List<CountryBorder> countryBorders = this.mapFiles.GetCountryBorders();
-                this.RecreateDrawing(borderPoints, countryBorders);
+                List<Country> countries = this.mapFiles.GetCountries();
+                this.RecreateDrawing(borderPoints, countryBorders, countries);
             }
             catch (InvalidOperationException er)
             {
@@ -893,7 +1158,8 @@
         /// </summary>
         /// <param name="borderPoints"> The list with <see cref="BorderPoint"/>. </param>
         /// <param name="countryBorders"> The list with <see cref="CountryBorder"/>. </param>
-        private void RecreateDrawing(List<BorderPoint> borderPoints, List<CountryBorder> countryBorders)
+        /// <param name="countries"> The list of <see cref="Country"/>. </param>
+        private void RecreateDrawing(List<BorderPoint> borderPoints, List<CountryBorder> countryBorders, List<Country> countries)
         {
             foreach (var countryBorder in countryBorders)
             {
@@ -901,6 +1167,8 @@
                 this.RecreateBorderPoint(countryBorder, borderPoints, countryBorder.BorderEndPointNumbers[1], true);
                 this.RecreateCountryBorder(countryBorder, borderPoints);
             }
+
+            this.RecreateCountries(countries);
         }
 
         /// <summary>
@@ -919,6 +1187,27 @@
             }
 
             this.borderItems.Add(borderItem);
+        }
+
+        /// <summary>
+        /// Fill the list with Countries for the countries dropdown.
+        /// </summary>
+        /// <param name="countries"> The list with <see cref="Country"/></param>
+        private void RecreateCountries(List<Country> countries)
+        {
+            foreach (var country in countries)
+            {
+                List<BorderItem> borderItems = new List<BorderItem>();
+                foreach (var numbers in country.CountriesBorderEndPointNumbers)
+                {
+                    borderItems.Add(this.borderItems.ToList().Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]));
+                }
+
+                CountryItem countryItem = new CountryItem(country.Name, borderItems);
+                this.countryItems.Add(countryItem);
+            }
+
+            this.Countries.Items.Refresh();
         }
 
         /// <summary>
@@ -1067,6 +1356,8 @@
             this.borderEndPointItems.Clear();
             this.borderItems.Clear();
             this.borderPointItems.Clear();
+            this.countryItems.Clear();
+            this.BordersForCountry.Items.Clear();
         }
 
         /// <summary>
@@ -1095,6 +1386,54 @@
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Removes the borders and name for a country in the controls for creating a new country.
+        /// </summary>
+        private void ClearCountryControls()
+        {
+            this.BordersForCountry.Items.Clear();
+            this.Borders.Items.Refresh();
+            this.CountryName.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// Setting the IsEnabled for all the controls for creating a border based on het selections.
+        /// </summary>
+        private void SetIsEnabledCountryControls()
+        {
+            this.NewCountry.IsEnabled = this.Countries.SelectedItem != null;
+            this.DeleteCountry.IsEnabled = this.Countries.SelectedItem != null;
+            this.AddCountry.IsEnabled = this.Countries.SelectedItem == null;
+            this.Borders.IsEnabled = this.Countries.SelectedItem == null;
+            this.CountryName.IsEnabled = this.Countries.SelectedItem == null;
+            this.AddBorder.IsEnabled = this.Countries.SelectedItem == null && this.Borders.SelectedItem != null;
+            this.DeleteBorderFromCountry.IsEnabled = this.Countries.SelectedItem == null && this.BordersForCountry.SelectedItem != null;
+        }
+
+        /// <summary>
+        /// A country is valid if alle de borders form a closed shape this means that every endpoint should be exactly 2 times in the total list.
+        /// </summary>
+        /// <returns> True if the <see cref="Borders"/> are a closed loop. </returns>
+        private bool AreBordersValidCountry()
+        {
+            Dictionary<int, int> endPointNumberCount = new Dictionary<int, int>();
+            foreach (BorderItem item in this.BordersForCountry.Items)
+            {
+                MapFiles.CountEndPointNumbers(endPointNumberCount, item.Numbers[0]);
+                MapFiles.CountEndPointNumbers(endPointNumberCount, item.Numbers[1]);
+            }
+
+            foreach (int count in endPointNumberCount.Values)
+            {
+                if (count != 2)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

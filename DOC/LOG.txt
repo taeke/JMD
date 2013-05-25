@@ -1,5 +1,15 @@
 LOG
 ===
+- Controlleren op geldigheid country: elke endpoint moet in precies twee borders voor komen en niet meer.
+- Controlleren op geldigheid country er mag geen borderendpoint binnen het oppervlak liggen.
+- New maakt combobox leeg, maar laat de getoond bestaan en delete gooit de getoond ook weg.
+- Textbox met naam Country en add knop alleen actief wanneer country dropdown leeg is.
+- Controle of een naam niet dubbel wordt toegevoegd. Add geeft dan foutmelding.
+- Controle of country met zelfde borderendpoints niet toegevoegd wordt dan geeft add een foutmelding.
+- dropdownbox met border met add knop er naast alleen actief wanneer dropdown countries leeg is.
+- Listbox met borders met delete knop er naast.
+- Kleuren voor de selecties.
+- Geen border kunnen weggooien als deze onderdeel van een country is.
 
 * - Een ingevuld filename (zonder extentie) geeft aan dat het een reeds benoemd bestand is. 
 * - Is de filename leeg dan is het een nog niet eerder opgeslagen new bestand.

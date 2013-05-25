@@ -1,7 +1,8 @@
 ﻿namespace JMD
 {
     using System.Collections.Generic;
-using System.Windows.Shapes;
+    using System.Windows;
+    using System.Windows.Shapes;
 
     /// <summary>
     /// Storing a <see cref="CountryBorder"/> and its visual representations.
@@ -20,6 +21,7 @@ using System.Windows.Shapes;
             this.Numbers = numbers;
             this.Lines = new Dictionary<Line, int[]>();
             this.Lines.Add(line, lineNumbers);
+            this.VisibleInComboBox = Visibility.Visible;
         }
 
         /// <summary>
@@ -31,5 +33,11 @@ using System.Windows.Shapes;
         /// The Line used for showing the <see cref="CountryBorder"/> on the drawingSurface.
         /// </summary>
         public Dictionary<Line, int[]> Lines { get; private set; }
+
+        /// <summary>
+        /// True if this BorderItem is not part of the currently selected country. So it can be 
+        /// selected to add it to the country.
+        /// </summary>
+        public Visibility VisibleInComboBox { get; set; }
     }
 }

@@ -181,6 +181,23 @@
         }
 
         /// <summary>
+        /// Update de list with the total count of endpoints with the provided number.
+        /// </summary>
+        /// <param name="endPointNumberCount"> the list</param>
+        /// <param name="number"> the number</param>
+        public static void CountEndPointNumbers(Dictionary<int, int> endPointNumberCount, int number)
+        {
+            if (endPointNumberCount.ContainsKey(number))
+            {
+                endPointNumberCount[number] = endPointNumberCount[number] + 1;
+            }
+            else
+            {
+                endPointNumberCount.Add(number, 1);
+            }
+        }
+
+        /// <summary>
         /// <inheritDoc/>
         /// </summary>
         public void Save()
@@ -312,8 +329,41 @@
             this.CheckIntersection(borderEndPoint1, borderEndPoint2);
 
             this.mapChanged = true;
-            CountryBorder countryBorder = new CountryBorder(borderEndPointNumbers);
-            this.map.CountryBorders.Add(countryBorder);
+            this.map.CountryBorders.Add(new CountryBorder(borderEndPointNumbers));
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public void AddCountry(string name, List<int[]> countriesBorderEndPointNumbers)
+        {
+            if (name == string.Empty)
+            {
+                throw new ArgumentException(Strings.NAME_EMPTY);
+            }
+
+            if (this.map.Countries.Find(c => c.Name == name) != null)
+            {
+                throw new ArgumentException(Strings.NAMES_ARE_THE_SAME);
+            }
+
+            if (!countriesBorderEndPointNumbers.All(c => this.map.CountryBorders.Find(b => b.BorderEndPointNumbers[0] == c[0] && b.BorderEndPointNumbers[1] == c[1]) != null))
+            {
+                throw new ArgumentException(Strings.BORDER_DOES_NOT_EXCIST);
+            }
+
+            if (!this.AreBordersValidCountry(countriesBorderEndPointNumbers))
+            {
+                throw new ArgumentException(Strings.BORDERS_ARE_NOT_COUNTRY);
+            }
+
+            if (countriesBorderEndPointNumbers.All(b => this.map.Countries.Find(c => c.CountriesBorderEndPointNumbers.Find(e => e[0] == b[0] && e[1] == b[1]) != null) != null))
+            {
+                throw new ArgumentException(Strings.BORDERS_ARE_NOT_COUNTRY);
+            }
+
+            this.mapChanged = true;
+            this.map.Countries.Add(new Country(name, countriesBorderEndPointNumbers));
         }
 
         /// <summary>
@@ -394,22 +444,6 @@
         /// <summary>
         /// <inheritDoc/>
         /// </summary>
-        public List<BorderPoint> GetBorderPoints()
-        {
-            return this.map.BorderPoints;
-        }
-
-        /// <summary>
-        /// <inheritDoc/>
-        /// </summary>
-        public List<CountryBorder> GetCountryBorders()
-        {
-            return this.map.CountryBorders;
-        }
-
-        /// <summary>
-        /// <inheritDoc/>
-        /// </summary>
         public void RemoveCountryBorder(int[] numbers)
         {
             CountryBorder countryBorder = this.map.CountryBorders.Find(b => b.BorderEndPointNumbers[0] == numbers[0] && b.BorderEndPointNumbers[1] == numbers[1]);
@@ -442,6 +476,49 @@
             }
 
             this.map.CountryBorders.Remove(countryBorder);
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public void RemoveCountry(string name)
+        {
+            if (name == string.Empty)
+            {
+                throw new ArgumentException(Strings.NAME_EMPTY);
+            }
+
+            Country country = this.map.Countries.Find(c => c.Name == name);
+            if (country == null)
+            {
+                throw new ArgumentException(Strings.NAME_DOES_NOT_EXICST);
+            }
+
+            this.map.Countries.Remove(country);
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public List<BorderPoint> GetBorderPoints()
+        {
+            return this.map.BorderPoints;
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public List<CountryBorder> GetCountryBorders()
+        {
+            return this.map.CountryBorders;
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public List<Country> GetCountries()
+        {
+            return this.map.Countries;
         }
 
         /// <summary>
@@ -483,6 +560,30 @@
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// A country is valid if alle de borders form a closed shape this means that every endpoint should be exactly 2 times in the total list.
+        /// </summary>
+        /// <returns></returns>
+        private bool AreBordersValidCountry(List<int[]> countriesBorderEndPointNumbers)
+        {
+            Dictionary<int, int> endPointNumberCount = new Dictionary<int, int>();
+            foreach (int[] numbers in countriesBorderEndPointNumbers)
+            {
+                CountEndPointNumbers(endPointNumberCount, numbers[0]);
+                CountEndPointNumbers(endPointNumberCount, numbers[1]);
+            }
+
+            foreach (int count in endPointNumberCount.Values)
+            {
+                if (count != 2)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

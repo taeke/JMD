@@ -1,8 +1,6 @@
 TODO
 ====
-- Eigen List voor BorderEndPointItem en die als source voor de dropdowns gebruiken.
-- Benamingen controleren.
-- GetSelectedLineForDraw lijkt wel erg veel op GetSelectedBorderItem.
+- Code controleren en netjes maken.
 - Drawingsurface schalen als form schaalt want nu lijkt deze onder of over de controls heen getekend te worden als je het form schaalt.
 
 DONE
@@ -47,3 +45,28 @@ DONE
 - Intersectie bij verslepen.
 - Intersectie ook met punten.
 - Geen nieuw endpoint op een lijn.
+- Eigen List voor BorderEndPointItem en die als source voor de dropdowns gebruiken.
+- Benamingen controleren.
+- GetSelectedLineForDraw lijkt wel erg veel op GetSelectedBorderItem.
+- Controls voor country tekenen.
+- Vullen dropdown voor borders.
+- Click op add achter border border opnemen in listbox. 
+- Click op delete achter listbox geselecteerd item uit listbox laten verdwijnen.
+- Toegevoegde borders verwijderen uit dropdown.
+- Verwijderde item uit listbox weer toevoegen aan dropdown.
+- Delete en add alleen beschikbaar als er iets geselecteerd is.
+- CountryItem class toevoegen.
+- Bij druk op knop add naast de country naam een CountryItem toevoegen aan de CountryItem list en de CountryItem list aan de dropdown 
+koppelen.
+- Controlles op add knop geen dubbelingen in de countries.
+- Bij druk op knop delete item uit de lijst verwijderen en selecteditem null maken. Bij knop op new alleen selecteditem null maken. Ook
+de lijst met borders en de naam leeg maken.
+- Zorgen dat alle knoppen correct enabeld en disabled zijn op het juiste moment.
+- Bij selecteren van een country ook de lijst met borders weer correct vullen en de name.
+- Bij add country check of de collection van borders wel een geldige country is.
+- Bij new en open (reset? ) ook lijst met borders en countries leeg halen.
+- Selectie kleuren.
+- Country class toevoegen.
+- AddCountry method maken inclusief unit tests.
+- RemoveCountry method maken inclusief unit tests.
+- Opnieuw laden countries. 
