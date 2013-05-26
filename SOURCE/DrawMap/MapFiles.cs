@@ -369,6 +369,31 @@
         /// <summary>
         /// <inheritDoc/>
         /// </summary>
+        /// <param name="location"><inheritDoc/></param>
+        public void AddOriginalMap(string location)
+        {
+            if (location == string.Empty)
+            {
+                throw new ArgumentException(Strings.LOCATION_EMPTY);
+            }
+
+            if (Path.GetExtension(location).ToUpper() != ".JPG")
+            {
+                throw new ArgumentException(Strings.EXTENSION_NOT_JPG);
+            }
+
+            if (!File.Exists(location))
+            {
+                throw new ArgumentException(Strings.FILE__DOES_NOT_EXCIST);
+            }
+
+            this.map.OriginalMap = location;
+            this.mapChanged = true;
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
         /// <param name="borderPointNumbers"><inheritDoc/></param>
         /// <param name="borderPointNumber"><inheritDoc/></param>
         public void InsertBorderPoint(int[] borderPointNumbers, int borderPointNumber)
@@ -519,6 +544,14 @@
         public List<Country> GetCountries()
         {
             return this.map.Countries;
+        }
+
+        /// <summary>
+        /// <inheritDoc/>
+        /// </summary>
+        public string GetOriginalMap()
+        {
+            return this.map.OriginalMap;
         }
 
         /// <summary>

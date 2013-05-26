@@ -761,6 +761,72 @@
         }
 
         /// <summary>
+        /// The tests for the AddOriginalMap method.
+        /// </summary>
+        [TestClass]
+        public class TheAddOriginalMapMethod : MapFileTests
+        {
+            /// <summary>
+            /// Testing if calling AddOriginalMap throws an Exception if the location is empty.
+            /// </summary>
+            [TestMethod, TestCategory("Integration"), ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfLocationIsEmpty()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.AddOriginalMap(string.Empty);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Testing if calling AddOriginalMap throws an Exception if the location has a wrong extension.
+            /// </summary>
+            [TestMethod, TestCategory("Integration"), ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfLocationHasNotExtentionJPG()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.AddOriginalMap("testWrongExtention.png");
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Testing if calling AddOriginalMap throws an Exception if the location does not excist.
+            /// </summary>
+            [TestMethod, TestCategory("Integration"), ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfLocationDoesNotExcist()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.AddOriginalMap("bestaatniet.jpg");
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Testing if calling AddOriginalMap goes with out warnings is the location is valid.
+            /// </summary>
+            [TestMethod, TestCategory("Integration")]
+            public void ShouldAddOriginalMapIfValidLocation()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.AddOriginalMap("test.jpg");
+
+                // Assert
+            }
+        }
+
+        /// <summary>
         /// The tests for the RemoveEndPoint method.
         /// </summary>
         [TestClass]

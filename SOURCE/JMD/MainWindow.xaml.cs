@@ -10,6 +10,7 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
     using DrawMap;
     using DrawMap.Interface;
@@ -96,6 +97,7 @@
             this.BorderEndPoint2.ItemsSource = this.borderEndPointItems;
             this.Borders.ItemsSource = this.borderItems;
             this.Countries.ItemsSource = this.countryItems;
+            this.BorderEndPointsGrid.Visibility = Visibility.Collapsed;
             this.BordersGrid.Visibility = Visibility.Collapsed;
             this.CountriesGrid.Visibility = Visibility.Collapsed;
             ((INotifyCollectionChanged)this.BordersForCountry.Items).CollectionChanged += this.BordersForCountry_CollectionChanged;
@@ -155,7 +157,7 @@
             {
                 this.ClearDrawing();
                 this.mapFiles.New();
-                this.ShowBorderEndPointTools.IsChecked = true;
+                this.ShowOriginalMapTools.IsChecked = true;
             }
         }
 
@@ -219,6 +221,22 @@
             if (this.ShowBorderTools != null && (bool)this.ShowBorderTools.IsChecked)
             {
                 this.CreateTempBorderPointOrSelectBorder(clickedPoint);
+            }
+
+            if (this.ShowCountryTools != null && (bool)this.ShowCountryTools.IsChecked)
+            {
+                if (this.hitResultsList.Count > 0 && this.Countries.SelectedItem == null)
+                {
+                    Line line = (Line)this.hitResultsList.Find(r => r is Line);
+                    if (line != null)
+                    {
+                        BorderItem borderItem = this.borderItems.ToList().Find(b => b.Lines.Keys.Contains(line));
+                        if (borderItem != null)
+                        {
+                            this.Borders.SelectedItem = borderItem;
+                       }
+                    }
+                }
             }
         }
 
@@ -374,14 +392,19 @@
         /// <param name="e"> The <see cref="RoutedEventArgs"/> instance. </param>
         private void DrawingTools_Checked(object sender, RoutedEventArgs e)
         {
-            if (this.ShowBorderTools != null && this.BordersGrid != null)
+            if (this.ShowOriginalMapTools != null && this.OriginalMapGrid != null)
             {
-                this.BordersGrid.Visibility = (bool)this.ShowBorderTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+                this.OriginalMapGrid.Visibility = (bool)this.ShowOriginalMapTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
             }
 
             if (this.ShowBorderEndPointTools != null && this.BorderEndPointsGrid != null)
             {
                 this.BorderEndPointsGrid.Visibility = (bool)this.ShowBorderEndPointTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (this.ShowBorderTools != null && this.BordersGrid != null)
+            {
+                this.BordersGrid.Visibility = (bool)this.ShowBorderTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
             }
 
             if (this.ShowCountryTools != null && this.CountriesGrid != null)
@@ -549,6 +572,44 @@
         {
             this.Countries.SelectedItem = null;
             this.ClearCountryControls();
+        }
+
+        /// <summary>
+        /// The user clicked the SelectJPG button.
+        /// </summary>
+        /// <param name="sender"> The button. </param>
+        /// <param name="e"> The RoutedEventArgs instance. </param>
+        private void SelectJPGFile_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.DefaultExt = ".jpg";
+            openFileDialog.Filter = "JPG documents (.jpg)|*.jpg";
+            bool? resultOpen = openFileDialog.ShowDialog();
+            if (resultOpen == true)
+            {
+                this.JPGFile.Text = openFileDialog.FileName;
+                this.mapFiles.AddOriginalMap(this.JPGFile.Text);
+            }
+        }
+
+        /// <summary>
+        /// The jpg file name is changed. The user can't changes this directly but by using the select button.
+        /// </summary>
+        /// <param name="sender"> The textbox. </param>
+        /// <param name="e"> The TextChangedEventArgs instance. </param>
+        private void JPGFile_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            this.OriginalMapJPG.Source = new BitmapImage(new Uri(this.JPGFile.Text));
+        }
+
+        /// <summary>
+        /// De user clicked on HideOriginal
+        /// </summary>
+        /// <param name="sender"> The checkbox. </param>
+        /// <param name="e"> The RoutedEventArgs instance. </param>
+        private void HideOriginal_Click(object sender, RoutedEventArgs e)
+        {
+            this.OriginalMapJPG.Visibility = (bool)this.HideOriginal.IsChecked ? Visibility.Collapsed : Visibility.Visible;
         }
 
         /// <summary>
@@ -1116,6 +1177,7 @@
                 List<CountryBorder> countryBorders = this.mapFiles.GetCountryBorders();
                 List<Country> countries = this.mapFiles.GetCountries();
                 this.RecreateDrawing(borderPoints, countryBorders, countries);
+                this.JPGFile.Text = this.mapFiles.GetOriginalMap();
             }
             catch (InvalidOperationException er)
             {
@@ -1352,12 +1414,15 @@
         /// </summary>
         private void ClearDrawing()
         {
-            this.DrawingSurface.Children.Clear();
+            this.DrawingSurface.Children.RemoveRange(1, this.DrawingSurface.Children.Count);
+            this.OriginalMapJPG.Source = null;
             this.borderEndPointItems.Clear();
             this.borderItems.Clear();
             this.borderPointItems.Clear();
             this.countryItems.Clear();
             this.BordersForCountry.Items.Clear();
+            this.JPGFile.Text = string.Empty;
+            this.CountryName.Text = string.Empty;
         }
 
         /// <summary>

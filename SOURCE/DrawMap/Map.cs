@@ -26,6 +26,11 @@
         private List<Country> countries = new List<Country>();
 
         /// <summary>
+        /// Backing field for OriginalMap
+        /// </summary>
+        private string originalMap;
+
+        /// <summary>
         /// Parameter less constructor is needed for serializing.
         /// </summary>
         public Map()
@@ -77,6 +82,22 @@
             set
             {
                 this.countries = value;
+            }
+        }
+
+        /// <summary>
+        /// The JPG location for the original map.
+        /// </summary>
+        public string OriginalMap
+        {
+            get
+            {
+                return this.originalMap;
+            }
+
+            set
+            {
+                this.originalMap = value;
             }
         }
     }

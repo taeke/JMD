@@ -142,6 +142,15 @@ namespace DrawMap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided file does not have een JPG extension..
+        /// </summary>
+        internal static string EXTENSION_NOT_JPG {
+            get {
+                return ResourceManager.GetString("EXTENSION_NOT_JPG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file does not excist..
         /// </summary>
         internal static string FILE__DOES_NOT_EXCIST {
@@ -174,6 +183,15 @@ namespace DrawMap {
         internal static string FILENAME_NOT_FILLED {
             get {
                 return ResourceManager.GetString("FILENAME_NOT_FILLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The location may not be empty..
+        /// </summary>
+        internal static string LOCATION_EMPTY {
+            get {
+                return ResourceManager.GetString("LOCATION_EMPTY", resourceCulture);
             }
         }
         

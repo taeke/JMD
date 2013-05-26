@@ -70,6 +70,12 @@
         void AddCountry(string name, List<int[]> countriesBorderEndPointNumbers);
 
         /// <summary>
+        /// Adds the locaction of the JPG for the original map.
+        /// </summary>
+        /// <param name="location"></param>
+        void AddOriginalMap(string location);
+
+        /// <summary>
         /// Splits an excisting <see cref="BorderPart"/> up in two. Creates an new BorderPart and edits the other to give it the new BorderPoint.
         /// </summary>
         /// <param name="borderPointNumbers"> The original <see cref="BorderPoint"/> numbers for the original <see cref="BorderPart"/></param>
@@ -111,5 +117,11 @@
         /// </summary>
         /// <returns> The list with <see cref="Country"/>. </returns>
         List<Country> GetCountries();
+
+        /// <summary>
+        /// Gets the location of the original map JPG>
+        /// </summary>
+        /// <returns> The location of the JPG. </returns>
+        string GetOriginalMap();
     }
 }

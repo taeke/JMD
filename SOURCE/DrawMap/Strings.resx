@@ -144,6 +144,9 @@
   <data name="COUNTRYBORDERS_INTERSECT" xml:space="preserve">
     <value>The Countryborders may not intersect.</value>
   </data>
+  <data name="EXTENSION_NOT_JPG" xml:space="preserve">
+    <value>The provided file does not have een JPG extension.</value>
+  </data>
   <data name="FILENAME_EMPTY" xml:space="preserve">
     <value>The filename can not be empty.</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="FILE__DOES_NOT_EXCIST" xml:space="preserve">
     <value>The file does not excist.</value>
+  </data>
+  <data name="LOCATION_EMPTY" xml:space="preserve">
+    <value>The location may not be empty.</value>
   </data>
   <data name="MALFORMED_XML" xml:space="preserve">
     <value>The xml file does not seem to be a JMD.xml file.</value>
