@@ -1,0 +1,40 @@
+I like to show you an application i have made for converting a JPG file of an map to a javascript file which draws the same map on a Canvas element. 
+The advantage of using Javascript to draw the map instead of using the JPG is that its smaller and mor dynamic.
+You can extend the Javascript code to highlight surrenten countries based on events or hide countries and so on.
+What you see is what an end result will look like in the application. 
+If you save this it will make three files. 
+One javascript file containing the methodes to draw the map and an array with the points taken form the drawing you have made in this application
+which is usee to draw the map.
+One HTML file containing an example of how to use the code.
+One XML file containing the information to recreate the drawing when you close the app and want to work on it again later on.
+The end result in the browser will look like this.
+To create this result start with selecting the JPG which will be the base for your drawing. Preverably converted to a black and white so you can 
+easaly distinquise it from the collord lines you can draw with this application.
+Then you can create the border endpoints. 
+Select Borderendpoint under What to draw to start this.
+Create them at the endpoints of a shared border between two countries.
+This way you can use this border for both countries. 
+Create att least three endpoint for each country even if it does not share a border with another country for instance when you draw an island.
+Create a few extra border endpoints on a large or complex country. 
+There is no undo yet if you make a mistake during shaping a border. 
+But you can delete the border it and start over.
+When you split is up in more endpoints you don't need to recreate to much work.
+Once you have created two endpoint you can create the borders.
+Select Borders under what to draw.
+Select the two endpoints in the dropdown.
+If you don't rember the number the application automatically will provide for a endpoint you can go back to drawing endpoints and click on
+a point to select it. 
+If you click near or on a endpoint it will select this endpoint and not create a new one.
+A selected endpoint can also be deleted this way except when it is allready part of an border.
+Click create to create a border. 
+A once create border can be delete with the delete button.
+A border can be shape by clicking on it with the mouse and draging it while holding down the mousebutton.
+It will warn you when you create an intersection with another line.
+It will also warn you if you create a new point to close to another point. 
+This way i hope te protect you from creating too many endpoints.
+Once you have drawn all the borders you can create a country.
+Give it a name and select all the borders by clicking on them or by selecting them in de dropdown and click add.
+Once you have added all the borders you can click add to add the country to the list of countries.
+Save the file and enjoy.
+
+
