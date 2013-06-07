@@ -22,9 +22,13 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
-            <Canvas x:Name="DrawingSurface"  MouseDown="DrawingSurface_MouseDown" Background="White" MouseUp="DrawingSurface_MouseUp" MouseMove="DrawingSurface_MouseMove" MouseLeave="DrawingSurface_MouseLeave">
-                <Image x:Name="OriginalMapJPG" Canvas.ZIndex="-1"/>
-            </Canvas>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Border BorderBrush="Black" BorderThickness="1" x:Name="DrawingSurfaceBorder">
+                    <Canvas x:Name="DrawingSurface"  MouseDown="DrawingSurface_MouseDown" Background="White" MouseUp="DrawingSurface_MouseUp" MouseMove="DrawingSurface_MouseMove" MouseLeave="DrawingSurface_MouseLeave">
+                        <Image x:Name="OriginalMapJPG" Canvas.ZIndex="-1"/>
+                    </Canvas>
+                </Border>
+            </ScrollViewer>
             <Border Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="Gray"/>
             <StackPanel Grid.Column="1">
 
@@ -143,9 +147,9 @@
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding Numbers[0]}"/>
+                                    <Label Content="{Binding EndPointNumbers[0]}"/>
                                     <Label Content="-" Grid.Column="1"/>
-                                    <Label Content="{Binding Numbers[1]}" Grid.Column="2"/>
+                                    <Label Content="{Binding EndPointNumbers[1]}" Grid.Column="2"/>
                                 </Grid>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -160,9 +164,9 @@
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="{Binding Numbers[0]}"/>
+                                    <Label Content="{Binding EndPointNumbers[0]}"/>
                                     <Label Content="-" Grid.Column="1"/>
-                                    <Label Content="{Binding Numbers[1]}" Grid.Column="2"/>
+                                    <Label Content="{Binding EndPointNumbers[1]}" Grid.Column="2"/>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

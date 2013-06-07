@@ -165,7 +165,7 @@
       </Rules>
       <AnalyzerSettings>
         <StringProperty Name="CompanyName">None</StringProperty>
-        <StringProperty Name="Copyright">Taeke van der Veen april 2013</StringProperty>
+        <StringProperty Name="Copyright">Taeke van der Veen juni 2013</StringProperty>
         <BooleanProperty Name="IgnorePrivates">True</BooleanProperty>
         <BooleanProperty Name="IncludeFields">False</BooleanProperty>
       </AnalyzerSettings>

@@ -64,6 +64,12 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="map-jmd.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="map-example-jmd.html" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectDir)..\..\Tools\StyleCop\StyleCop 4.7\StyleCop.Current.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

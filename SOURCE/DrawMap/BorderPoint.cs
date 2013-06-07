@@ -1,4 +1,10 @@
-﻿namespace DrawMap
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="BorderPoint.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+namespace DrawMap
 {
     using System;
     using DrawMap.Interface;
@@ -25,6 +31,11 @@
         private int number;
 
         /// <summary>
+        /// Backing field for IsEndPoint.
+        /// </summary>
+        private bool isEndPoint;
+
+        /// <summary>
         /// Parameter less constructor is needed for serializing.
         /// </summary>
         public BorderPoint()
@@ -37,11 +48,12 @@
         /// <param name="x"> the X coordinant </param>
         /// <param name="y"> the Y coordinant </param>
         /// <param name="number"> The unique indentifying number for this instance. </param>
-        public BorderPoint(double x, double y, int number)
+        public BorderPoint(double x, double y, int number, bool isEndPoint)
         {
             this.x = x;
             this.y = y;
             this.number = number;
+            this.isEndPoint = isEndPoint;
         }
 
         /// <summary>
@@ -89,6 +101,22 @@
             set
             {
                 this.number = value;
+            }
+        }
+
+        /// <summary>
+        /// Is this BorderPoint a endpoint.
+        /// </summary>
+        public bool IsEndPoint
+        {
+            get
+            {
+                return this.isEndPoint;
+            }
+
+            set
+            {
+                this.isEndPoint = value;
             }
         }
     }

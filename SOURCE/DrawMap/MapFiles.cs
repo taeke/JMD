@@ -1,9 +1,17 @@
-﻿namespace DrawMap
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="MapFiles.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+namespace DrawMap
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
+    using System.Text;
     using System.Windows;
     using System.Xml;
     using System.Xml.Serialization;
@@ -14,6 +22,13 @@
     /// </summary>
     public class MapFiles : IMapFiles
     {
+        /// <summary>
+        /// The diameter for the Ellipses which are a visual representation of the BorderEndPoints.
+        /// The other <see cref="BorderPoint"/> are also drawn but the visibility is set to Hidden. This
+        /// way it van be used in testing for intersection but does not cluther the drawing.
+        /// </summary>
+        public const int PointDiameter = 4;
+
         /// <summary>
         /// Backing field for FileName.
         /// </summary>
@@ -83,7 +98,7 @@
         /// <summary>
         /// <inheritDoc/>
         /// </summary>
-        public bool MapChanged
+        public bool IsMapChanged
         {
             get
             {
@@ -212,12 +227,9 @@
                 throw new InvalidOperationException(Strings.FILENAME_EXCIST_MAY_NOT_OVERWRITE);
             }
 
-            using (TextWriter textWriter = new StreamWriter(this.fileName))
-            {
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Map));
-                xmlSerializer.Serialize(textWriter, this.map);
-            }
-
+            this.CreateXMLFile();
+            this.CreateJSFile();
+            this.CreateHTMLFile();
             this.mapChanged = false;
             this.ignoreChanges = false;
             this.mayOverwriteExcisting = true;
@@ -290,11 +302,11 @@
         /// <summary>
         /// <inheritDoc/>
         /// </summary>
-        public int AddBorderPoint(double x, double y)
+        public int AddBorderPoint(double x, double y, bool isEndPoint)
         {
             this.mapChanged = true;
             int maxNumber = this.map.BorderPoints.Count == 0 ? 0 : this.map.BorderPoints.OrderByDescending(b => b.Number).First().Number;
-            BorderPoint borderPoint = new BorderPoint(x, y, maxNumber + 1);
+            BorderPoint borderPoint = new BorderPoint(x, y, maxNumber + 1, isEndPoint);
             this.map.BorderPoints.Add(borderPoint);
             return borderPoint.Number;
         }
@@ -488,6 +500,11 @@
                 }
             }
 
+            if (this.map.Countries.Find(c => c.CountriesBorderEndPointNumbers.Find(b => b[0] == numbers[0] && b[1] == numbers[1]) != null) != null)
+            {
+                throw new ArgumentException(Strings.CANNOT_DELETE_BORDER_COUNTRY);
+            }
+
             this.mapChanged = true;
             foreach (BorderPart borderPart in countryBorder.BorderParts)
             {
@@ -587,7 +604,7 @@
             {
                 if (borderEndPoint1 != borderPoint && borderEndPoint2 != borderPoint)
                 {
-                    if (IsIntersectingCircle(new Point(borderEndPoint1.X, borderEndPoint1.Y), new Point(borderEndPoint2.X, borderEndPoint2.Y), new Point(borderPoint.X, borderPoint.Y), 4))
+                    if (IsIntersectingCircle(new Point(borderEndPoint1.X, borderEndPoint1.Y), new Point(borderEndPoint2.X, borderEndPoint2.Y), new Point(borderPoint.X, borderPoint.Y), 2))
                     {
                         throw new ArgumentException(Strings.COUNTRYBORDERS_INTERSECT);
                     }
@@ -617,6 +634,165 @@
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Creates a ordert list of unique indentifing numbers for <see cref="BorderPoint"/>. It orders them
+        /// by starting at a random posision and follow each borderpart to the next point until we have had all 
+        /// the point for the provided <see cref="Country"/>.
+        /// </summary>
+        /// <param name="country"></param>
+        /// <returns></returns>
+        private List<int> CreateListOfPoints(Country country)
+        {
+            List<int> result = new List<int>();
+            List<BorderPart> allBorderParts = this.GetAllBorderPartsForCountry(country);
+            int firstNumber = allBorderParts[0].BorderPointNumbers[0];
+            result.Add(firstNumber);
+            int nextNumber = allBorderParts[0].BorderPointNumbers[1];
+            allBorderParts.Remove(allBorderParts[0]);
+            while (allBorderParts.Count > 0)
+            {
+                result.Add(nextNumber);
+                BorderPart borderPart = allBorderParts.Find(b => b.BorderPointNumbers.Contains(nextNumber));
+                nextNumber = borderPart.BorderPointNumbers[0] == nextNumber ? borderPart.BorderPointNumbers[1] : borderPart.BorderPointNumbers[0];
+                allBorderParts.Remove(borderPart);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Convert the list of points for a <see cref="Country"/> in a string with a javascript array of points.
+        /// </summary>
+        /// <param name="country"></param>
+        /// <returns></returns>
+        private string CreateJavaScriptArrayOfPoints(Country country)
+        {
+            List<int> points = this.CreateListOfPoints(country);
+            StringBuilder result = new StringBuilder();
+            foreach (var point in points)
+            {
+                result.Append("[");
+                result.Append(((int)this.map.BorderPoints.Find(b => b.Number == point).X).ToString());
+                result.Append(",");
+                result.Append(((int)this.map.BorderPoints.Find(b => b.Number == point).Y).ToString());
+                result.Append("]");
+                if (point != points.Last())
+                {
+                    result.Append(",");
+                }
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Create a list of All the <see cref="BorderPart"/> instances of all the <see cref="CountryBorder"/> instances for a <see cref="Country"/>
+        /// </summary>
+        /// <param name="country">The <see cref="Country"/> for which to find all the <see cref="BorderPart"/></param>
+        /// <returns> A list with all the <see cref="BorderPart"/> instances for a <see cref="Country"/>.</returns>
+        private List<BorderPart> GetAllBorderPartsForCountry(Country country)
+        {
+            List<CountryBorder> allBorders = country.CountriesBorderEndPointNumbers.Select(b => this.map.CountryBorders.Find(c => c.BorderEndPointNumbers[0] == b[0] && c.BorderEndPointNumbers[1] == b[1])).ToList();
+            return allBorders.SelectMany(b => b.BorderParts).ToList();
+        }
+
+        /// <summary>
+        /// Creates the JavaScript file.
+        /// </summary>
+        private void CreateJSFile()
+        {
+            using (TextWriter textWriterJS = new StreamWriter(this.fileName.Replace(".xml", ".js")))
+            {
+                StringBuilder oWorldData = new StringBuilder("{");
+                StringBuilder countryNames = new StringBuilder("\"");
+                foreach (var country in this.map.Countries)
+                {
+                    oWorldData.Append("\"");
+                    oWorldData.Append(country.Name);
+                    oWorldData.Append("\":");
+                    oWorldData.Append("[[");
+                    oWorldData.Append(this.CreateJavaScriptArrayOfPoints(country));
+                    oWorldData.Append("]]");
+                    countryNames.Append(country.Name);
+                    if (country != this.map.Countries.Last())
+                    {
+                        countryNames.Append(",");
+                        oWorldData.Append(",");
+                    }
+                }
+
+                oWorldData.Append("}");
+                countryNames.Append("\"");
+                string js = this.GetDefaultJS();
+                js = js.Replace("#PlaceHolderOMapData#", oWorldData.ToString());
+                js = js.Replace("#PlaceHolderCountryNames#", countryNames.ToString());
+                textWriterJS.Write(js);
+            }
+        }
+
+        /// <summary>
+        /// Creates the HTML File
+        /// </summary>
+        private void CreateHTMLFile()
+        {
+            using (TextWriter textWriterHTML = new StreamWriter(this.fileName.Replace(".xml", ".html")))
+            {
+                string html = this.GetDefaultHTML();
+                html = html.Replace("#PlaceHolderJSFileName#", Path.GetFileName(this.fileName.Replace(".xml", ".js")));
+                StringBuilder countryNames = new StringBuilder();
+                var random = new Random();
+                foreach (var country in this.map.Countries)
+                {
+                    countryNames.Append("\"");
+                    countryNames.Append(country.Name);
+                    countryNames.Append("\": \"");
+                    countryNames.Append(string.Format("#{0:X6}", random.Next(0x1000000)));
+                    countryNames.Append("\",");
+                }
+
+                html = html.Replace("#PlaceHolderDetail#", countryNames.ToString());
+                textWriterHTML.Write(html);
+            }
+        }
+
+        /// <summary>
+        /// The base HTML file is an emmbedded resource.
+        /// </summary>
+        /// <returns> A string with the content of the base HTML file.</returns>
+        private string GetDefaultHTML()
+        {
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DrawMap." + "map-example-jmd.html"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        /// <summary>
+        /// The base JS file is an emmbedded resource.
+        /// </summary>
+        /// <returns> A string with the content of the base JS file.</returns>
+        private string GetDefaultJS()
+        {
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DrawMap." + "map-jmd.js"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        /// <summary>
+        /// Create the XML file.
+        /// </summary>
+        private void CreateXMLFile()
+        {
+            using (TextWriter textWriterXML = new StreamWriter(this.fileName))
+            {
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(Map));
+                xmlSerializer.Serialize(textWriterXML, this.map);
+            }
         }
     }
 }

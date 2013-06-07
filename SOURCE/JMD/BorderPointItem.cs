@@ -1,4 +1,10 @@
-﻿namespace JMD
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="BorderPointItem.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+namespace JMD
 {
     using System.Windows;
     using System.Windows.Shapes;

@@ -106,6 +106,15 @@ namespace DrawMap {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The border van not be delete it is part of a Country.
+        /// </summary>
+        internal static string CANNOT_DELETE_BORDER_COUNTRY {
+            get {
+                return ResourceManager.GetString("CANNOT_DELETE_BORDER_COUNTRY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The endpoint can not be delete it is part of a CountryBorder..
         /// </summary>
         internal static string CANNOT_DELETE_ENDPOINT_BORDER {

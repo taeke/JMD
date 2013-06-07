@@ -132,6 +132,9 @@
   <data name="BORDER_DOES_NOT_EXCIST" xml:space="preserve">
     <value>The provided numbers for the border are not found.</value>
   </data>
+  <data name="CANNOT_DELETE_BORDER_COUNTRY" xml:space="preserve">
+    <value>The border van not be delete it is part of a Country</value>
+  </data>
   <data name="CANNOT_DELETE_ENDPOINT_BORDER" xml:space="preserve">
     <value>The endpoint can not be delete it is part of a CountryBorder.</value>
   </data>

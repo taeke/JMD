@@ -1,15 +1,13 @@
 TODO
 ====
-- JPG ook kunnen verbergen.
-- Ook borders met de muis kunnen selecteren bij maken country.
-- Code fatsoeneren.
-- Inchecken.
 
-- Punten op volgorde zetten.
-- Punten en namen wegschrijven in JS file.
-
-- Testen of je niet een ander endpoint insluit met een country.
-- Drawingsurface schalen als form schaalt want nu lijkt deze onder of over de controls heen getekend te worden als je het form schaalt.
+IDEEEN
+======
+- Meer testen schrijven.
+- Punten kunnen verplaatsen.
+- Zichtbaar maken waar de punten zijn in de lijnen.
+- Punten voor lijnen ook kunnen selecteren door er op te klikken.
+- Loggen toegevoegd.
 
 DONE
 ====
@@ -84,3 +82,13 @@ de lijst met borders en de naam leeg maken.
 - Image vast onderdeel van xaml alleen source wisselen.
 - Gekozen JPG opslaan in bestand.
 - JPG herladen bij heropenen bestand.
+- Drawingsurface lijkt onder de controls heen getekend te worden als je het form schaalt.
+- Waarom worden de punten niet opnieuwe geladen of worden ze niet opgeslagen.
+- Geen border kunnen verwijderen die gebruikt is in een country.
+- Direct lijnen toevoegen als je er op klikt.
+- Ook in frontend blokkeren verwijderen border die onderdeel is van country.
+- Tekst in HTML file aanpassen.
+- Alle source files voorzien van header.
+- Zwarte lijn om Canvas tekenen zodat duidelijk is tot waar deze reikt.
+- Controle of er wel een check is dat borders niet dubbel worden toegevoegd.
+- De border wordt niet terug gezet bij New. 

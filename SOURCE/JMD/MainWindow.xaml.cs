@@ -1,10 +1,18 @@
-﻿namespace JMD
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="MainWindow.xaml.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+
+namespace JMD
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.ComponentModel;
+    using System.IO;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
@@ -17,72 +25,50 @@
     using Microsoft.Win32;
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Code behind for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         /// <summary>
-        /// The diameter for the Ellipses which are a visual representation of the BorderEndPoints.
-        /// The other <see cref="BorderPoint"/> are also drawn but the visibility is set to Hidden. This
-        /// way it van be used in testing for intersection but does not cluther the drawing.
-        /// </summary>
-        private const int PointDiameter = 6;
-
-        /// <summary>
-        /// The diameter for the selection. If a item falls whitin this diameter there is not a new item drawn but this item is selected
-        /// or the click is ignored.
-        /// </summary>
-        private const int SelectionDiameter = 6;
-
-        /// <summary>
-        /// The <see cref="MapFiles"/> instance.
+        /// The <see cref="IMapFiles"/> instance.
         /// </summary>
         private IMapFiles mapFiles;
 
         /// <summary>
-        /// Resuls for the mouseClick on the drawing surface.
+        /// Objects found on the DrawingSurface Canvas within a radius around the point where the user clicks with the mouse.
         /// </summary>
         private List<DependencyObject> hitResultsList = new List<DependencyObject>();
 
         /// <summary>
-        /// The list of <see cref="BorderItem"/>. Keeps track of the lines which form one countryborder en the unique indentifying
-        /// numbers for these lines en countryborder.
+        /// The list of <see cref="BorderItem"/> instances. 
         /// </summary>
         private ObservableCollection<BorderItem> borderItems = new ObservableCollection<BorderItem>();
 
         /// <summary>
-        /// The list of <see cref="BorderPointItem"/>. Keeps track of the ellipses which form the points of a countryborder and the
-        /// unique indentifying number for these points.
+        /// The list of <see cref="BorderPointItem"/> instances. 
         /// </summary>
         private List<BorderPointItem> borderPointItems = new List<BorderPointItem>();
 
         /// <summary>
-        /// The ObservableCollection of <see cref="BorderEndPointItem"/>. Keeps track of the ellipses which form the end points of a
-        /// countryborder and the unique indentifying number for these points.
+        /// The ObservableCollection of <see cref="BorderEndPointItem"/> instances. 
         /// </summary>
         private ObservableCollection<BorderEndPointItem> borderEndPointItems = new ObservableCollection<BorderEndPointItem>();
 
         /// <summary>
-        /// The observableCollection of <see cref="CountryItem"/>. Keeps track of the Countries the user has added.
+        /// The observableCollection of <see cref="CountryItem"/> instances.
         /// </summary>
         private ObservableCollection<CountryItem> countryItems = new ObservableCollection<CountryItem>();
 
         /// <summary>
-        /// If the user selects two borderEndPointItems in BorderEndPoint1 and BorderEndPoint2 for which a countryborder is created. This
-        /// holds a reference to the BorderItem presenting this countryBorder.
-        /// </summary>
-        private BorderItem selectedBorderItem;
-
-        /// <summary>
-        /// If the user his hold his mouse down on a selected countryborder in border drawing mode this line is split in two and he can drag both
-        /// ends to a point where he wants it.
+        /// If the user his hold his mouse down on the selectedBorderItem, when Borders is selected in "What to draw", the line on
+        /// which he clicked is split in two. This holds a reference to both lines. 
         /// </summary>
         private List<Line> dragingLines = new List<Line>();
 
         /// <summary>
-        /// Is the user holding his mouse down and draging a point on the border to a new location?
+        /// Is the user holding his mouse down and is draging to a new location and Borders is selected in "What to draw".
         /// </summary>
-        private bool drawingNewBorderPoint = false;
+        private bool isDragingNewBorderPoint = false;
 
         /// <summary>
         /// Initializes the window.
@@ -100,14 +86,48 @@
             this.BorderEndPointsGrid.Visibility = Visibility.Collapsed;
             this.BordersGrid.Visibility = Visibility.Collapsed;
             this.CountriesGrid.Visibility = Visibility.Collapsed;
+            ((INotifyCollectionChanged)this.borderItems).CollectionChanged += this.BorderItems_CollectionChanged;
             ((INotifyCollectionChanged)this.BordersForCountry.Items).CollectionChanged += this.BordersForCountry_CollectionChanged;
         }
 
         /// <summary>
-        /// The collection of borders for the country is changed so the list of visible borders in de dropdown 
-        /// must also change.
+        /// The selected <see cref="BorderItem"/> when Borders is selected in "What to draw".
         /// </summary>
-        /// <param name="sender"> The listbox with the borders for the country. </param>
+        private BorderItem SelectedBorderItem
+        {
+            get
+            {
+                if (this.BorderEndPoint1.SelectedItem == null)
+                {
+                    return null;
+                }
+
+                if (this.BorderEndPoint2.SelectedItem == null)
+                {
+                    return null;
+                }
+
+                int[] numbers = this.GetNumbers();
+                return this.borderItems.ToList().Find(b => b.EndPointNumbers[0] == numbers[0] && b.EndPointNumbers[1] == numbers[1]);
+            }
+        }
+
+        /// <summary>
+        /// The BorderItems collection of <see cref="BorderItem"/> instances is changed. The buttons
+        /// for creating or deleting a borderitem must also change.
+        /// </summary>
+        /// <param name="sender"> The collection of <see cref="BorderItem"/> instances.</param>
+        /// <param name="e"> The NotifyCollectionChangedEventArgs instance. </param>
+        public void BorderItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            this.SetBorderItemsButtons();
+        }
+
+        /// <summary>
+        /// The BordersForCountry collection of <see cref="BorderItem"/> instances for the country is changed. The list of visible 
+        /// <see cref="BorderItem"/> instances in de Borders ComboBox must also change.
+        /// </summary>
+        /// <param name="sender"> The Listbox. The BordersForCountry collectien is set as Source for this Listbox. </param>
         /// <param name="e"> The NotifyCollectionChangedEventArgs instance. </param>
         public void BordersForCountry_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -125,14 +145,14 @@
         }
 
         /// <summary>
-        /// Opening an excisting file.
+        /// The user clicked on the MenuItem for opening an excisting file.
         /// </summary>
-        /// <param name="sender"> The menu clicked. </param>
+        /// <param name="sender"> The MenuItem clicked. </param>
         /// <param name="e"> The <see cref="RoutedEventArges"/> instance. </param>
         private void MenuItem_Open_Click(object sender, RoutedEventArgs e)
         {
             this.CheckChanges();
-            if (!this.mapFiles.MapChanged || this.mapFiles.IgnoreChanges)
+            if (!this.mapFiles.IsMapChanged || this.mapFiles.IgnoreChanges)
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 openFileDialog.DefaultExt = ".xml";
@@ -146,14 +166,14 @@
         }
 
         /// <summary>
-        /// Creating an new file.
+        /// The user clicked on the MenuItem for creating an new file.
         /// </summary>
-        /// <param name="sender"> The menu clicked. </param>
+        /// <param name="sender"> The MenuItem clicked. </param>
         /// <param name="e"> The <see cref="RoutedEventArges"/> instance. </param>
         private void MenuItem_New_Click(object sender, RoutedEventArgs e)
         {
             this.CheckChanges();
-            if (!this.mapFiles.MapChanged || this.mapFiles.IgnoreChanges)
+            if (!this.mapFiles.IsMapChanged || this.mapFiles.IgnoreChanges)
             {
                 this.ClearDrawing();
                 this.mapFiles.New();
@@ -162,52 +182,52 @@
         }
 
         /// <summary>
-        /// Saving an file.
+        /// The user clicked on the MenuItem for Saving an file.
         /// </summary>
-        /// <param name="sender"> The menu clicked. </param>
+        /// <param name="sender"> The MenuItem clicked. </param>
         /// <param name="e"> The <see cref="RoutedEventArges"/> instance. </param>
         private void MenuItem_Save_Click(object sender, RoutedEventArgs e)
         {
-            bool isCanceld = false;
+            bool isCanceled = false;
             if (this.mapFiles.FileName == string.Empty || this.mapFiles.FileName == null)
             {
-                isCanceld = !this.CheckFileName();
+                isCanceled = !this.SetSaveFileName();
             }
 
-            if (!isCanceld)
+            if (!isCanceled)
             {
-                isCanceld = !this.CheckOverwrite();
+                isCanceled = !this.CheckOverwrite();
             }
 
-            if (!isCanceld)
+            if (!isCanceled)
             {
                 this.mapFiles.Save();
             }
         }
 
         /// <summary>
-        /// Saving an file under another name.
+        /// The user clicked on the MenuItem for saving an file under another name.
         /// </summary>
-        /// <param name="sender"> The menu clicked. </param>
+        /// <param name="sender"> The MenuItem clicked. </param>
         /// <param name="e"> The <see cref="RoutedEventArges"/> instance. </param>
         private void MenuItem_SaveAs_Click(object sender, RoutedEventArgs e)
         {
-            bool isCanceld = !this.CheckFileName();
-            if (!isCanceld)
+            bool isCanceled = !this.SetSaveFileName();
+            if (!isCanceled)
             {
-                isCanceld = !this.CheckOverwrite();
+                isCanceled = !this.CheckOverwrite();
             }
 
-            if (!isCanceld)
+            if (!isCanceled)
             {
                 this.mapFiles.Save();
             }
         }
 
         /// <summary>
-        /// The user clicked somewhere on the drawing surface and wants to draw something.
+        /// The user clicked somewhere on the DrawingSurface Canvas.
         /// </summary>
-        /// <param name="sender"> The clicked drawing surface. </param>
+        /// <param name="sender"> The clicked Canvas. </param>
         /// <param name="e"> The <see cref="MouseButtonEventArgs"/> instance. </param>
         private void DrawingSurface_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -220,47 +240,33 @@
 
             if (this.ShowBorderTools != null && (bool)this.ShowBorderTools.IsChecked)
             {
-                this.CreateTempBorderPointOrSelectBorder(clickedPoint);
+                this.CreateTempLinesOrSelectBorderItem(clickedPoint);
             }
 
             if (this.ShowCountryTools != null && (bool)this.ShowCountryTools.IsChecked)
             {
-                if (this.hitResultsList.Count > 0 && this.Countries.SelectedItem == null)
-                {
-                    Line line = (Line)this.hitResultsList.Find(r => r is Line);
-                    if (line != null)
-                    {
-                        BorderItem borderItem = this.borderItems.ToList().Find(b => b.Lines.Keys.Contains(line));
-                        if (borderItem != null)
-                        {
-                            this.Borders.SelectedItem = borderItem;
-                       }
-                    }
-                }
+                this.AddBorderItemToCountry();
             }
         }
 
         /// <summary>
-        /// The user lifted the mouse button. He could be draging a point on the border to a new location.
+        /// The user lifted the mouse button on the DrawingSurface Canvas. 
         /// </summary>
-        /// <param name="sender"> The drawing surface. </param>
+        /// <param name="sender"> The Canvas. </param>
         /// <param name="e"> The <see cref="MouseButtonEventArgs"/> instance. </param>
         private void DrawingSurface_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (this.drawingNewBorderPoint)
+            if (this.isDragingNewBorderPoint)
             {
-                Point point1 = new Point(this.dragingLines[0].X1, this.dragingLines[0].Y1);
-                Point point2 = new Point(this.dragingLines[1].X1, this.dragingLines[1].Y1);
                 Point newPoint = new Point(e.GetPosition(this.DrawingSurface).X, e.GetPosition(this.DrawingSurface).Y);
-                this.GetHitResultsList(newPoint);
-                if (!this.CheckInterSection(point1, newPoint) && !this.CheckInterSection(point2, newPoint))
+                this.MoveDragingLines(newPoint);
+                if (!this.IsIntersectingWithOtherLinesOrPoints(new Point(this.dragingLines[0].X1, this.dragingLines[0].Y1), newPoint) && 
+                    !this.IsIntersectingWithOtherLinesOrPoints(new Point(this.dragingLines[1].X1, this.dragingLines[1].Y1), newPoint))
                 {
-                    this.drawingNewBorderPoint = false;
-                    this.MoveDragingLines(newPoint);
                     this.CreateNewBorderPoint(newPoint);
-                    this.dragingLines.Clear();
-                    this.ReDraw();
                 }
+
+                this.CancelDragging();
             }
         }
 
@@ -272,21 +278,21 @@
         /// <param name="e"> The <see cref="MouseEventArgs"/> instance. </param>
         private void DrawingSurface_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (this.drawingNewBorderPoint)
+            if (this.isDragingNewBorderPoint)
             {
+                this.RemoveNewDragingLineAndRestoreOriginal();
                 this.CancelDragging();
             }
         }
 
         /// <summary>
-        /// The user moves the mouse over the DrawingSurface and could be draging a point on the border to
-        /// a new location so we need to redraw it.
+        /// The user moves the mouse over the DrawingSurface Canvas.
         /// </summary>
         /// <param name="sender"> The DrawingSurface, </param>
         /// <param name="e"> The <see cref="MouseEventArgs"/> instance. </param>
         private void DrawingSurface_MouseMove(object sender, MouseEventArgs e)
         {
-            if (this.drawingNewBorderPoint)
+            if (this.isDragingNewBorderPoint)
             {
                 this.MoveDragingLines(new Point(e.GetPosition(this.DrawingSurface).X, e.GetPosition(this.DrawingSurface).Y));
             }
@@ -299,17 +305,17 @@
         /// <param name="e"> The <see cref="RoutedEventArgs"/> instance. </param>
         private void CreateCountryBorder_Click(object sender, RoutedEventArgs e)
         {
-            if (!this.CheckIntersectionNewBorder())
+            if (!this.IsIntersectingWithOtherLinesOrPoints(
+                ((BorderEndPointItem)this.BorderEndPoint1.SelectedItem).ClickedPoint,
+                ((BorderEndPointItem)this.BorderEndPoint2.SelectedItem).ClickedPoint))
             {
-                this.selectedBorderItem = this.CreateNewBorder();
-                this.CreateCountryBorder.IsEnabled = false;
-                this.DeleteCountryBorder.IsEnabled = true;
+                this.CreateNewBorder();
                 this.ReDraw();
             }
         }
 
         /// <summary>
-        /// The user selected another BorderEndpoint.
+        /// The user selected another BorderEndpoint when Borders is selected in "What to draw".
         /// </summary>
         /// <param name="sender"> The combobox containing the borderendpoints. </param>
         /// <param name="e"> The <see cref="SelectionChangedEventArgs"/> instance. </param>
@@ -327,7 +333,7 @@
         private void DeleteBorderEndPoint_Click(object sender, RoutedEventArgs e)
         {
             BorderEndPointItem borderEndPointItem = (BorderEndPointItem)this.BorderEndPoints.SelectedItem;
-            if (this.borderItems.ToList().Find(b => b.Numbers.Contains(borderEndPointItem.Number)) == null)
+            if (this.borderItems.ToList().Find(b => b.EndPointNumbers.Contains(borderEndPointItem.Number)) == null)
             {
                 this.mapFiles.RemoveBorderPoint(borderEndPointItem.Number);
                 this.DrawingSurface.Children.Remove(borderEndPointItem.Ellipse);
@@ -347,28 +353,16 @@
         /// <param name="e"> The <see cref="RoutedEventArgs"/> instance. </param>
         private void DeleteCountryBorder_Click(object sender, RoutedEventArgs e)
         {
-            this.mapFiles.RemoveCountryBorder(this.selectedBorderItem.Numbers);
-            foreach (KeyValuePair<Line, int[]> lineNumbers in this.selectedBorderItem.Lines)
+            BorderItem borderItem = this.SelectedBorderItem;
+            if (this.countryItems.ToList().Find(c => c.BorderItems.Contains(borderItem)) == null)
             {
-                foreach (int number in lineNumbers.Value)
-                {
-                    if (!this.selectedBorderItem.Numbers.Contains(number))
-                    {
-                        this.borderPointItems.Remove(this.borderPointItems.Find(b => b.Number == number));
-                    }
-                }
+                this.mapFiles.RemoveCountryBorder(borderItem.EndPointNumbers);
+                this.RemoveBorderItem(borderItem);
             }
-
-            foreach (Line line in this.selectedBorderItem.Lines.Keys)
+            else
             {
-                this.DrawingSurface.Children.Remove(line);
+                MessageBox.Show("Can't delete a CountryBorder which is part of a Country");
             }
-
-            this.borderItems.Remove(this.selectedBorderItem);
-            this.selectedBorderItem = null;
-            this.CreateCountryBorder.IsEnabled = true;
-            this.DeleteCountryBorder.IsEnabled = false;
-            this.ReDraw();
         }
 
         /// <summary>
@@ -379,39 +373,21 @@
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             this.CheckChanges();
-            if (this.mapFiles.MapChanged && !this.mapFiles.IgnoreChanges)
+            if (this.mapFiles.IsMapChanged && !this.mapFiles.IgnoreChanges)
             {
                 e.Cancel = true;
             }
         }
 
         /// <summary>
-        /// The user choose another drawing tool. Make the right grid visible.
+        /// The user choose another drawing tool. 
         /// </summary>
         /// <param name="sender"> The radiobutton clicked. </param>
         /// <param name="e"> The <see cref="RoutedEventArgs"/> instance. </param>
         private void DrawingTools_Checked(object sender, RoutedEventArgs e)
         {
-            if (this.ShowOriginalMapTools != null && this.OriginalMapGrid != null)
-            {
-                this.OriginalMapGrid.Visibility = (bool)this.ShowOriginalMapTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-            }
-
-            if (this.ShowBorderEndPointTools != null && this.BorderEndPointsGrid != null)
-            {
-                this.BorderEndPointsGrid.Visibility = (bool)this.ShowBorderEndPointTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-            }
-
-            if (this.ShowBorderTools != null && this.BordersGrid != null)
-            {
-                this.BordersGrid.Visibility = (bool)this.ShowBorderTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-            }
-
-            if (this.ShowCountryTools != null && this.CountriesGrid != null)
-            {
-                this.CountriesGrid.Visibility = (bool)this.ShowCountryTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-            }
-
+            this.SetShowOriginalMapIfOriginalMapNotSelected();
+            this.ShowAnToolsGrid();
             this.ReDraw();
         }
 
@@ -515,39 +491,23 @@
                 isOk = false;
             }
 
-            List<BorderItem> borderItemsForCountry = new List<BorderItem>();
-            foreach (var item in this.BordersForCountry.Items)
-            {
-                borderItemsForCountry.Add((BorderItem)item);
-            }
-
-            CountryItem countryItem = new CountryItem(this.CountryName.Text, borderItemsForCountry);
-            if (isOk && this.countryItems.ToList().Find(c => c.Name == countryItem.Name) != null)
-            {
-                MessageBox.Show("There is allready a country with this name in the list.");
-                isOk = false;
-            }
-
-            if (isOk && this.countryItems.ToList().Find(delegate(CountryItem i)
-            {
-                return countryItem.BorderItems.OrderBy(b1 => b1.Numbers[0]).ThenBy(b2 => b2.Numbers[1]).SequenceEqual(i.BorderItems.OrderBy(b1 => b1.Numbers[0]).ThenBy(b2 => b2.Numbers[1]));
-            }) != null)
-            {
-                MessageBox.Show("There is allready a country with these borders in the list");
-                isOk = false;
-            }
-
             if (isOk && !this.AreBordersValidCountry())
             {
                 MessageBox.Show("The borders do not form a valid country.");
                 isOk = false;
             }
 
+            CountryItem countryItem = this.CreateCountryItem();
+            if (isOk)
+            {
+                isOk = !this.CountryExcists(countryItem);
+            }
+
             if (isOk)
             {
                 this.countryItems.Add(countryItem);
                 this.Countries.SelectedItem = countryItem;
-                this.mapFiles.AddCountry(countryItem.Name, countryItem.BorderItems.Select(b => b.Numbers).ToList());
+                this.mapFiles.AddCountry(countryItem.Name, countryItem.BorderItems.Select(b => b.EndPointNumbers).ToList());
             }
         }
 
@@ -589,6 +549,8 @@
             {
                 this.JPGFile.Text = openFileDialog.FileName;
                 this.mapFiles.AddOriginalMap(this.JPGFile.Text);
+                this.HideOriginal.IsChecked = false;
+                this.OriginalMapJPG.Visibility = Visibility.Visible;
             }
         }
 
@@ -599,7 +561,12 @@
         /// <param name="e"> The TextChangedEventArgs instance. </param>
         private void JPGFile_TextChanged(object sender, TextChangedEventArgs e)
         {
-            this.OriginalMapJPG.Source = new BitmapImage(new Uri(this.JPGFile.Text));
+            if (this.JPGFile.Text != string.Empty && File.Exists(this.JPGFile.Text))
+            {
+                this.OriginalMapJPG.Source = new BitmapImage(new Uri(this.JPGFile.Text));
+                this.DrawingSurfaceBorder.Width = this.OriginalMapJPG.Source.Width + 2;
+                this.DrawingSurfaceBorder.Height = this.OriginalMapJPG.Source.Height + 2;
+            }
         }
 
         /// <summary>
@@ -620,13 +587,7 @@
         private void EndPointsForBorderSelectionChanged(ComboBox changed, ComboBox other)
         {
             this.SetVisibilityForBorderEndPointItems(changed, other);
-            this.selectedBorderItem = this.GetSelectedBorderItem();
-            this.CreateCountryBorder.IsEnabled = this.selectedBorderItem == null &&
-                                                 this.BorderEndPoint1.SelectedItem != null &&
-                                                 this.BorderEndPoint2.SelectedItem != null;
-            this.DeleteCountryBorder.IsEnabled = this.selectedBorderItem != null &&
-                                                 this.BorderEndPoint1.SelectedItem != null &&
-                                                 this.BorderEndPoint2.SelectedItem != null;
+            this.SetBorderItemsButtons();
             this.ReDraw();
         }
 
@@ -679,7 +640,7 @@
         /// line is part of will get selected and NO new borderpoint will get created.
         /// </summary>
         /// <param name="clickedPoint"> The point where the user clicked. </param>
-        private void CreateTempBorderPointOrSelectBorder(Point clickedPoint)
+        private void CreateTempLinesOrSelectBorderItem(Point clickedPoint)
         {
             if (this.hitResultsList.Count > 0 && this.hitResultsList.Find(r => r is Ellipse) == null)
             {
@@ -689,13 +650,13 @@
                     BorderItem borderItem = this.borderItems.ToList().Find(b => b.Lines.Keys.Contains(line));
                     if (borderItem != null)
                     {
-                        if (this.selectedBorderItem != null && this.selectedBorderItem == borderItem)
+                        if (this.SelectedBorderItem != null && this.SelectedBorderItem == borderItem)
                         {
-                            this.CreateTempLineForNewBorderPoint(clickedPoint, line);
+                            this.CreateTempLinesForNewBorderPoint(clickedPoint, line);
                         }
                         else
                         {
-                            this.SelectBorderItemInControls(borderItem);
+                            this.SetBorderEndPointItems(borderItem);
                         }
                     }
                 }
@@ -707,16 +668,16 @@
         /// the selecteditems for those controle based on a borderItem.
         /// </summary>
         /// <param name="borderItem"> The borderitem for which to set the controls. </param>
-        private void SelectBorderItemInControls(BorderItem borderItem)
+        private void SetBorderEndPointItems(BorderItem borderItem)
         {
             foreach (var item in this.BorderEndPoint1.Items)
             {
-                if (((BorderEndPointItem)item).Number == borderItem.Numbers[0])
+                if (((BorderEndPointItem)item).Number == borderItem.EndPointNumbers[0])
                 {
                     this.BorderEndPoint1.SelectedItem = item;
                 }
 
-                if (((BorderEndPointItem)item).Number == borderItem.Numbers[1])
+                if (((BorderEndPointItem)item).Number == borderItem.EndPointNumbers[1])
                 {
                     this.BorderEndPoint2.SelectedItem = item;
                 }
@@ -726,15 +687,15 @@
         /// <summary>
         /// When a user clicks on a line. The line gets split in two parts and the user can drag the new point to
         /// the locations he wants it to be. On the releas of the mouse button the new line and new point become
-        /// permanent.
+        /// permanent. This method will split the line.
         /// </summary>
         /// <param name="clickedPoint"> The point to split the line on.</param>
         /// <param name="line"> The line to split. Will get a new endpoint and the new line will get the old end point as start point. </param>
-        private void CreateTempLineForNewBorderPoint(Point clickedPoint, Line line)
+        private void CreateTempLinesForNewBorderPoint(Point clickedPoint, Line line)
         {
-            this.drawingNewBorderPoint = true;
-            double x1 = this.borderPointItems.Find(b => b.Number == this.selectedBorderItem.Lines.First(l => l.Key == line).Value[1]).ClickedPoint.X;
-            double y1 = this.borderPointItems.Find(b => b.Number == this.selectedBorderItem.Lines.First(l => l.Key == line).Value[1]).ClickedPoint.Y;
+            this.isDragingNewBorderPoint = true;
+            double x1 = this.borderPointItems.Find(b => b.Number == this.SelectedBorderItem.Lines.First(l => l.Key == line).Value[1]).ClickedPoint.X;
+            double y1 = this.borderPointItems.Find(b => b.Number == this.SelectedBorderItem.Lines.First(l => l.Key == line).Value[1]).ClickedPoint.Y;
             this.dragingLines.Add(this.AddLineToDrawingSurface(new Point(x1, y1), clickedPoint, true));
             line.X2 = clickedPoint.X;
             line.Y2 = clickedPoint.Y;
@@ -747,44 +708,13 @@
         /// <param name="clickedPoint"> The clicked point. </param>
         private void GetHitResultsList(Point clickedPoint)
         {
-            EllipseGeometry expandedHitTestArea = new EllipseGeometry(clickedPoint, SelectionDiameter, SelectionDiameter);
+            EllipseGeometry expandedHitTestArea = new EllipseGeometry(clickedPoint, MapFiles.PointDiameter / 2, MapFiles.PointDiameter / 2);
             this.hitResultsList.Clear();
             VisualTreeHelper.HitTest(
                 this.DrawingSurface,
                 null,
                 new HitTestResultCallback(this.HitTestResultCallback),
                 new GeometryHitTestParameters(expandedHitTestArea));
-        }
-
-        /// <summary>
-        /// There are two combobox controls for selecting both endpoint for a border. This will
-        /// return the BorderItem which belongs to the two endpoint if this instance excists.
-        /// </summary>
-        /// <returns> The found <see cref="BorderItem"/></returns>
-        private BorderItem GetSelectedBorderItem()
-        {
-            if (this.BorderEndPoint1.SelectedItem == null)
-            {
-                return null;
-            }
-
-            if (this.BorderEndPoint2.SelectedItem == null)
-            {
-                return null;
-            }
-
-            int[] numbers = this.GetNumbers();
-            return this.borderItems.ToList().Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]);
-        }
-
-        /// <summary>
-        /// Check if the <see cref="BorderPoint"/> for a <see cref="CountryBorder"/> both are selected and there is NOT
-        /// allready created a <see cref="CountryBorder"/> for this combination.
-        /// </summary>
-        /// <returns> True if a combination of <see cref="BorderPoint"/> is chosen that isn't allready a <see cref="CountryBorder"/>. </returns>
-        private bool NotCreatedCountryBorderSelected()
-        {
-            return this.GetSelectedBorderItem() == null;
         }
 
         /// <summary>
@@ -805,12 +735,16 @@
         }
 
         /// <summary>
-        /// Check if we must ask the user if he wants to overwrite the file and set the bool.
+        /// Check if a file would be overwriteen and, if so, ask the user if he wants to overwrite the file if the MayOverwriteExcisting
+        /// bool is not set yet.
         /// </summary>
-        /// <returns> false if the filename would be overwritten but the user presses No in the dialog. </returns>
+        /// <returns> false if the filename would be overwritten but the user chooses NOT to overwrite. </returns>
         private bool CheckOverwrite()
         {
-            if (this.mapFiles.FileName != string.Empty && this.mapFiles.FileName != null && this.mapFiles.FilenameExcists && !this.mapFiles.MayOverwriteExcisting)
+            if (this.mapFiles.FileName != string.Empty && 
+                this.mapFiles.FileName != null && 
+                this.mapFiles.FilenameExcists && 
+                !this.mapFiles.MayOverwriteExcisting)
             {
                 if (MessageBox.Show(
                     "Overwrite excisting file?",
@@ -829,23 +763,22 @@
         }
 
         /// <summary>
-        /// Check if we must ask the user for a file name and set the filename.
+        /// Ask the user to provide a XML filename for the mapFiles instance.
         /// </summary>
-        /// <returns> false if the user must provide a filename but cancels the dialog. </returns>
-        private bool CheckFileName()
+        /// <returns> false if the user canceled the dialog. </returns>
+        private bool SetSaveFileName()
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.DefaultExt = ".xml";
             saveFileDialog.Filter = "XML documents (.xml)|*.xml";
             saveFileDialog.OverwritePrompt = false;
-            bool? result = saveFileDialog.ShowDialog();
-            if (result == true)
+            bool saveResult = (bool)saveFileDialog.ShowDialog();
+            if (saveResult == true)
             {
                 this.mapFiles.FileName = saveFileDialog.FileName;
-                return true;
             }
 
-            return false;
+            return saveResult;
         }
 
         /// <summary>
@@ -853,7 +786,7 @@
         /// </summary>
         /// <param name="clickedPoint"> The point where to create the new ellipse for the <see cref="BorderPoint"/>. </param>
         /// <param name="visible"> Should the new ellipse be visible or hidden. </param>
-        /// <returns> The create Ellipse. </returns>
+        /// <returns> The created Ellipse. </returns>
         private Ellipse AddEllipseToDrawingSurface(Point clickedPoint, bool visible)
         {
             Ellipse ellipse = this.CreateEllipse();
@@ -941,8 +874,8 @@
             {
                 foreach (var item in this.BordersForCountry.Items)
                 {
-                    this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)item).Numbers[0]).Ellipse, result);
-                    this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)item).Numbers[1]).Ellipse, result);
+                    this.AddEllipseForRedraw(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)item).EndPointNumbers[0]).Ellipse, result);
+                    this.AddEllipseForRedraw(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)item).EndPointNumbers[1]).Ellipse, result);
                 }
             }
 
@@ -959,7 +892,7 @@
                 (bool)this.ShowBorderTools.IsChecked)
             {
                 int[] numbers = this.GetNumbers();
-                BorderItem borderItem = this.borderItems.ToList().Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]);
+                BorderItem borderItem = this.borderItems.ToList().Find(b => b.EndPointNumbers[0] == numbers[0] && b.EndPointNumbers[1] == numbers[1]);
                 return borderItem == null ? null : borderItem.Lines.Keys.ToList();
             }
 
@@ -985,14 +918,20 @@
                 (bool)this.ShowBorderEndPointTools.IsChecked &&
                 this.BorderEndPoints != null)
             {
-                this.AddEllipse(this.BorderEndPoints.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoints.SelectedItem).Ellipse : null, result);
+                this.AddEllipseForRedraw(
+                    this.BorderEndPoints.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoints.SelectedItem).Ellipse : null, 
+                    result);
             }
 
             if (this.ShowBorderTools != null &&
                 (bool)this.ShowBorderTools.IsChecked)
             {
-                this.AddEllipse(this.BorderEndPoint1.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint1.SelectedItem).Ellipse : null, result);
-                this.AddEllipse(this.BorderEndPoint2.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint2.SelectedItem).Ellipse : null, result);
+                this.AddEllipseForRedraw(
+                    this.BorderEndPoint1.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint1.SelectedItem).Ellipse : null, 
+                    result);
+                this.AddEllipseForRedraw(
+                    this.BorderEndPoint2.SelectedItem != null ? ((BorderEndPointItem)this.BorderEndPoint2.SelectedItem).Ellipse : null, 
+                    result);
             }
 
             if (this.ShowCountryTools != null &&
@@ -1000,8 +939,12 @@
                 this.Borders != null &&
                 this.Borders.SelectedItem != null)
             {
-                this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)this.Borders.SelectedItem).Numbers[0]).Ellipse, result);
-                this.AddEllipse(this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)this.Borders.SelectedItem).Numbers[1]).Ellipse, result);
+                this.AddEllipseForRedraw(
+                    this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)this.Borders.SelectedItem).EndPointNumbers[0]).Ellipse, 
+                    result);
+                this.AddEllipseForRedraw(
+                    this.borderEndPointItems.ToList().Find(b => b.Number == ((BorderItem)this.Borders.SelectedItem).EndPointNumbers[1]).Ellipse, 
+                    result);
             }
 
             return result;
@@ -1012,7 +955,7 @@
         /// </summary>
         /// <param name="ellipse"> The ellipse to add or null. </param>
         /// <param name="ellipses"> The list of ellipses. </param>
-        private void AddEllipse(Ellipse ellipse, List<Ellipse> ellipses)
+        private void AddEllipseForRedraw(Ellipse ellipse, List<Ellipse> ellipses)
         {
             if (ellipse != null)
             {
@@ -1027,25 +970,25 @@
         private Ellipse CreateEllipse()
         {
             Ellipse ellipse = new Ellipse();
-            ellipse.Height = PointDiameter;
-            ellipse.Width = PointDiameter;
+            ellipse.Height = MapFiles.PointDiameter;
+            ellipse.Width = MapFiles.PointDiameter;
             SolidColorBrush selectedBrush = this.UnSelectedBrush();
             ellipse.Stroke = selectedBrush;
             ellipse.Fill = selectedBrush;
             TranslateTransform myTranslate = new TranslateTransform();
-            myTranslate.X = -(int)PointDiameter / 2;
-            myTranslate.Y = -(int)PointDiameter / 2;
+            myTranslate.X = -MapFiles.PointDiameter / 2;
+            myTranslate.Y = -MapFiles.PointDiameter / 2;
             ellipse.RenderTransform = myTranslate;
             return ellipse;
         }
 
         /// <summary>
-        /// A visual representation of a <see cref="CountryBorder"/>.
+        /// A visual representation of a <see cref="BorderPart"/>.
         /// </summary>
         /// <param name="point1"> The first endpoint of the line. </param>
         /// <param name="point2"> The second endpoint of the line. </param>
         /// <param name="isSelected"> Is the new line also the new selected line. </param>
-        /// <returns> The Line representing the <see cref="CountryBorder"/>. </returns>
+        /// <returns> The Line representing the <see cref="BorderPart"/>. </returns>
         private Line CreateLine(Point point1, Point point2, bool isSelected)
         {
             Line line = new Line();
@@ -1092,7 +1035,7 @@
         }
 
         /// <summary>
-        /// Callback for testing if the user selected an allready drawn part.
+        /// Callback for testing if the user selected an allready drawn item.
         /// </summary>
         /// <param name="result"> The result list. </param>
         /// <returns> The HitTestResultBehavior. </returns>
@@ -1115,13 +1058,14 @@
         }
 
         /// <summary>
-        /// Create a new <see cref="BorderPoint"/> add it to the list and create a visual representation of it.
+        /// Create a new <see cref="BorderPoint"/> which is an endpoint for a <see cref="CountryBorder"/> add it to the list 
+        /// and create a visual representation of it.
         /// </summary>
         /// <param name="clickedPoint"> Point where we want to create the new <see cref="BorderPoint"/></param>
         private void CreateNewBorderEndPoint(Point clickedPoint)
         {
             Ellipse ellipse = this.AddEllipseToDrawingSurface(clickedPoint, true);
-            BorderEndPointItem borderEndPointItem = new BorderEndPointItem(this.mapFiles.AddBorderPoint(clickedPoint.X, clickedPoint.Y), ellipse, clickedPoint);
+            BorderEndPointItem borderEndPointItem = new BorderEndPointItem(this.mapFiles.AddBorderPoint(clickedPoint.X, clickedPoint.Y, true), ellipse, clickedPoint);
             BorderPointItem borderPointItem = new BorderPointItem(borderEndPointItem.Number, ellipse, clickedPoint);
             this.borderPointItems.Add(borderPointItem);
             this.borderEndPointItems.Add(borderEndPointItem);
@@ -1132,8 +1076,7 @@
         /// <summary>
         /// Create a new <see cref="CountryBorder"/> add it to the list and create a visual representation of it.
         /// </summary>
-        /// <returns> The new BorderItem. </returns>
-        private BorderItem CreateNewBorder()
+        private void CreateNewBorder()
         {
             BorderEndPointItem[] borderEndPointItemsLine = this.GetBorderEndPointItemsOrdered();
             Line line = this.AddLineToDrawingSurface(borderEndPointItemsLine[0].ClickedPoint, borderEndPointItemsLine[1].ClickedPoint, true);
@@ -1142,7 +1085,6 @@
             BorderItem borderItem = new BorderItem(numbers, line, new int[2] { numbers[0], numbers[1] });
             this.borderItems.Add(borderItem);
             this.ReDraw();
-            return borderItem;
         }
 
         /// <summary>
@@ -1164,20 +1106,20 @@
         }
 
         /// <summary>
-        /// Open an excisting file with the definition of a map.
+        /// Open an excisting file.
         /// </summary>
         /// <param name="fileName"> The filename to open. </param>
         private void OpenFile(string fileName)
         {
             try
             {
-                this.mapFiles.Open(fileName);
                 this.ClearDrawing();
+                this.mapFiles.Open(fileName);
+                this.JPGFile.Text = this.mapFiles.GetOriginalMap();
                 List<BorderPoint> borderPoints = this.mapFiles.GetBorderPoints();
                 List<CountryBorder> countryBorders = this.mapFiles.GetCountryBorders();
                 List<Country> countries = this.mapFiles.GetCountries();
                 this.RecreateDrawing(borderPoints, countryBorders, countries);
-                this.JPGFile.Text = this.mapFiles.GetOriginalMap();
             }
             catch (InvalidOperationException er)
             {
@@ -1186,22 +1128,11 @@
         }
 
         /// <summary>
-        /// Check if a new visual representation of a <see cref="CountryBorder"/> intersects with the allready drawn istances.
-        /// </summary>
-        /// <returns> True if the new <see cref="CountryBorder"/> intersects with an allready created instance. </returns>
-        private bool CheckIntersectionNewBorder()
-        {
-            Point c = ((BorderEndPointItem)this.BorderEndPoint1.SelectedItem).ClickedPoint;
-            Point d = ((BorderEndPointItem)this.BorderEndPoint2.SelectedItem).ClickedPoint;
-            return this.CheckInterSection(c, d);
-        }
-
-        /// <summary>
-        /// Check if there are changes and ask the user if he wants to ignore them.
+        /// Check if there are changes and, if so, ask the user if he wants to ignore them.
         /// </summary>
         private void CheckChanges()
         {
-            if (this.mapFiles.MapChanged)
+            if (this.mapFiles.IsMapChanged)
             {
                 string msg = "There is unsafed data. Ignore without saving?";
                 MessageBoxResult result =
@@ -1215,7 +1146,7 @@
         }
 
         /// <summary>
-        /// Draw the visual representions ot the <see cref="CountryBorder"/> and <see cref="BorderPoint"/> on the drawingsurface 
+        /// Draw the visual representions of the <see cref="CountryBorder"/> and <see cref="BorderPoint"/> on the drawingsurface 
         /// after reopening a file.
         /// </summary>
         /// <param name="borderPoints"> The list with <see cref="BorderPoint"/>. </param>
@@ -1223,10 +1154,13 @@
         /// <param name="countries"> The list of <see cref="Country"/>. </param>
         private void RecreateDrawing(List<BorderPoint> borderPoints, List<CountryBorder> countryBorders, List<Country> countries)
         {
+            foreach (var item in borderPoints)
+            {
+                this.RecreateBorderPoint(item);
+            }
+
             foreach (var countryBorder in countryBorders)
             {
-                this.RecreateBorderPoint(countryBorder, borderPoints, countryBorder.BorderEndPointNumbers[0], true);
-                this.RecreateBorderPoint(countryBorder, borderPoints, countryBorder.BorderEndPointNumbers[1], true);
                 this.RecreateCountryBorder(countryBorder, borderPoints);
             }
 
@@ -1262,7 +1196,7 @@
                 List<BorderItem> borderItems = new List<BorderItem>();
                 foreach (var numbers in country.CountriesBorderEndPointNumbers)
                 {
-                    borderItems.Add(this.borderItems.ToList().Find(b => b.Numbers[0] == numbers[0] && b.Numbers[1] == numbers[1]));
+                    borderItems.Add(this.borderItems.ToList().Find(b => b.EndPointNumbers[0] == numbers[0] && b.EndPointNumbers[1] == numbers[1]));
                 }
 
                 CountryItem countryItem = new CountryItem(country.Name, borderItems);
@@ -1281,8 +1215,8 @@
         /// <returns> The created Line. </returns>
         private Line CreateLineFromBorderPoints(CountryBorder countryBorder, BorderPart borderPart, List<BorderPoint> borderPoints)
         {
-            Point point1 = this.RecreateBorderPoint(countryBorder, borderPoints, borderPart.BorderPointNumbers[0], false);
-            Point point2 = this.RecreateBorderPoint(countryBorder, borderPoints, borderPart.BorderPointNumbers[1], false);
+            Point point1 = this.borderPointItems.Find(b => b.Number == borderPart.BorderPointNumbers[0]).ClickedPoint;
+            Point point2 = this.borderPointItems.Find(b => b.Number == borderPart.BorderPointNumbers[1]).ClickedPoint;
             Line line = this.AddLineToDrawingSurface(point1, point2, false);
             return line;
         }
@@ -1290,28 +1224,18 @@
         /// <summary>
         /// Recreates the visual representation of a <see cref="BorderPoint"/>.
         /// </summary>
-        /// <param name="countryBorder"> The <see cref="CountryBorder"/> for which to create the <see cref="BorderPoint"/>. </param>
-        /// <param name="borderPoints"> All the <see cref="BorderPoint"/> for the map. </param>
-        /// <param name="number"> The unique indentifying number for this BorderPoint. </param>
-        /// <param name="isEndPoint"> Is this an endpoint?</param>
-        /// <returns> The point where de borderpoint is created. </returns>
-        private Point RecreateBorderPoint(CountryBorder countryBorder, List<BorderPoint> borderPoints, int number, bool isEndPoint)
+        /// <param name="borderPoint"> The <see cref="BorderPoint"/> to recreate in the drawing. </param>
+        private void RecreateBorderPoint(BorderPoint borderPoint)
         {
-            BorderPoint borderPoint = borderPoints.Find(p => p.Number == number);
             Point point = new Point(borderPoint.X, borderPoint.Y);
-            if ((!countryBorder.BorderEndPointNumbers.Contains(number) || isEndPoint) && this.borderPointItems.Find(p => p.Number == number) == null)
+            Ellipse ellipse = this.AddEllipseToDrawingSurface(point, borderPoint.IsEndPoint);
+            BorderPointItem borderPointItem = new BorderPointItem(borderPoint.Number, ellipse, point);
+            this.borderPointItems.Add(borderPointItem);
+            if (borderPoint.IsEndPoint)
             {
-                Ellipse ellipse = this.AddEllipseToDrawingSurface(point, isEndPoint);
-                BorderPointItem borderPointItem = new BorderPointItem(number, ellipse, point);
-                this.borderPointItems.Add(borderPointItem);
-                if (isEndPoint)
-                {
-                    BorderEndPointItem boderEndPointItem = new BorderEndPointItem(number, ellipse, point);
-                    this.borderEndPointItems.Add(boderEndPointItem);
-                }
+                BorderEndPointItem boderEndPointItem = new BorderEndPointItem(borderPoint.Number, ellipse, point);
+                this.borderEndPointItems.Add(boderEndPointItem);
             }
-
-            return point;
         }
 
         /// <summary>
@@ -1322,18 +1246,18 @@
         /// <param name="d"> second point on both lines.</param>
         /// <param name="e"> first point on second line.</param>
         /// <returns> True if one of the lines or both are intersecting wih one of the other lines or ellipses. </returns>
-        private bool CheckIntersectionDragingLines(Point c, Point d, Point e)
+        private bool DragingLinesAreIntersectingWithOtherLinesOrPoints(Point c, Point d, Point e)
         {
-            return this.CheckInterSection(c, d) || this.CheckInterSection(d, e);
+            return this.IsIntersectingWithOtherLinesOrPoints(c, d) || this.IsIntersectingWithOtherLinesOrPoints(d, e);
         }
 
         /// <summary>
-        /// Check of the line representent by both endpoints do not intersect with any other borderpart or borderpoint.
+        /// Check if the line representent by both endpoints is intersecting with any other lines or points.
         /// </summary>
         /// <param name="c"> first endpoint of the line. </param>
         /// <param name="d"> second endpoint of the line. </param>
-        /// <returns>True if the line is intersecting wih one of the other lines or ellipses.</returns>
-        private bool CheckInterSection(Point c, Point d)
+        /// <returns>true if the line is intersecting wih one of the other lines or ellipses.</returns>
+        private bool IsIntersectingWithOtherLinesOrPoints(Point c, Point d)
         {
             bool areIntersecting = false;
             foreach (BorderItem borderItem in this.borderItems)
@@ -1367,10 +1291,7 @@
         /// </summary>
         private void CancelDragging()
         {
-            this.drawingNewBorderPoint = false;
-            this.dragingLines[1].X2 = this.dragingLines[0].X1;
-            this.dragingLines[1].Y2 = this.dragingLines[0].Y1;
-            this.DrawingSurface.Children.Remove(this.dragingLines[0]);
+            this.isDragingNewBorderPoint = false;
             this.dragingLines.Clear();
             this.ReDraw();
         }
@@ -1388,24 +1309,24 @@
         }
 
         /// <summary>
-        /// A line is split in two parts now the CountryBorder have to be updated with this new and changed borderpart.
+        /// A line is split in two parts now the CountryBorder has to be updated with this new and changed borderpart.
         /// And the list of borderpointitems and borderitems have to be updated.
         /// </summary>
         /// <param name="point"> The point where to split the selectedBorderItem. </param>
         private void CreateNewBorderPoint(Point point)
         {
-            if (this.dragingLines.Count == 2 && this.selectedBorderItem != null)
+            if (this.dragingLines.Count == 2 && this.SelectedBorderItem != null)
             {
                 Ellipse ellipse = this.AddEllipseToDrawingSurface(point, false);
-                BorderPointItem borderPointItem = new BorderPointItem(this.mapFiles.AddBorderPoint(point.X, point.Y), ellipse, point);
+                BorderPointItem borderPointItem = new BorderPointItem(this.mapFiles.AddBorderPoint(point.X, point.Y, false), ellipse, point);
                 this.borderPointItems.Add(borderPointItem);
-                KeyValuePair<Line, int[]> lineNumbers = this.selectedBorderItem.Lines.First(l => l.Key == this.dragingLines[1]);
+                KeyValuePair<Line, int[]> lineNumbers = this.SelectedBorderItem.Lines.First(l => l.Key == this.dragingLines[1]);
                 int[] numbers = new int[2];
                 numbers[0] = lineNumbers.Value[1];
                 numbers[1] = borderPointItem.Number;
                 this.mapFiles.InsertBorderPoint(lineNumbers.Value, borderPointItem.Number);
                 lineNumbers.Value[1] = borderPointItem.Number;
-                this.selectedBorderItem.Lines.Add(this.dragingLines[0], numbers);
+                this.SelectedBorderItem.Lines.Add(this.dragingLines[0], numbers);
             }
         }
 
@@ -1416,13 +1337,18 @@
         {
             this.DrawingSurface.Children.RemoveRange(1, this.DrawingSurface.Children.Count);
             this.OriginalMapJPG.Source = null;
+            this.JPGFile.Text = string.Empty;
             this.borderEndPointItems.Clear();
             this.borderItems.Clear();
             this.borderPointItems.Clear();
             this.countryItems.Clear();
             this.BordersForCountry.Items.Clear();
-            this.JPGFile.Text = string.Empty;
             this.CountryName.Text = string.Empty;
+            this.DrawingSurfaceBorder.Height = double.NaN;
+            this.DrawingSurfaceBorder.Width = double.NaN;
+            this.ShowOriginalMapTools.IsChecked = true;
+            this.HideOriginal.IsChecked = false;
+            this.OriginalMapJPG.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -1486,8 +1412,8 @@
             Dictionary<int, int> endPointNumberCount = new Dictionary<int, int>();
             foreach (BorderItem item in this.BordersForCountry.Items)
             {
-                MapFiles.CountEndPointNumbers(endPointNumberCount, item.Numbers[0]);
-                MapFiles.CountEndPointNumbers(endPointNumberCount, item.Numbers[1]);
+                MapFiles.CountEndPointNumbers(endPointNumberCount, item.EndPointNumbers[0]);
+                MapFiles.CountEndPointNumbers(endPointNumberCount, item.EndPointNumbers[1]);
             }
 
             foreach (int count in endPointNumberCount.Values)
@@ -1499,6 +1425,163 @@
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Set the SelectedItem on the Borders control. 
+        /// </summary>
+        private void AddBorderItemToCountry()
+        {
+            if (this.hitResultsList.Count > 0 && this.Countries.SelectedItem == null)
+            {
+                Line line = (Line)this.hitResultsList.Find(r => r is Line);
+                if (line != null)
+                {
+                    BorderItem borderItem = this.borderItems.ToList().Find(b => b.Lines.Keys.Contains(line));
+                    if (borderItem != null && !this.BordersForCountry.Items.Contains(borderItem))
+                    {
+                        this.BordersForCountry.Items.Add(borderItem);
+                        if (borderItem == this.Borders.SelectedItem)
+                        {
+                            this.Borders.SelectedItem = null;
+                        }
+
+                        this.ReDraw();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove the new line which was created by draging en restore the endpoint of the original line.
+        /// </summary>
+        private void RemoveNewDragingLineAndRestoreOriginal()
+        {
+            this.dragingLines[1].X2 = this.dragingLines[0].X1;
+            this.dragingLines[1].Y2 = this.dragingLines[0].Y1;
+            this.DrawingSurface.Children.Remove(this.dragingLines[0]);
+        }
+
+        /// <summary>
+        /// The create or the delete button is enabled for a <see cref="BorderItem"/> depending on wheter there
+        /// is allready a created <see cref="BorderItem"/> for the selected endpoints or not.
+        /// </summary>
+        private void SetBorderItemsButtons()
+        {
+            this.CreateCountryBorder.IsEnabled = this.SelectedBorderItem == null &&
+                                                 this.BorderEndPoint1.SelectedItem != null &&
+                                                 this.BorderEndPoint2.SelectedItem != null;
+            this.DeleteCountryBorder.IsEnabled = this.SelectedBorderItem != null &&
+                                                 this.BorderEndPoint1.SelectedItem != null &&
+                                                 this.BorderEndPoint2.SelectedItem != null;
+        }
+
+        /// <summary>
+        /// The user must first select an original map JPG before doing any other drawing.
+        /// </summary>
+        private void SetShowOriginalMapIfOriginalMapNotSelected()
+        {
+            if (this.ShowOriginalMapTools != null &&
+                this.JPGFile != null &&
+                this.JPGFile.Text == string.Empty &&
+                !(bool)this.ShowOriginalMapTools.IsChecked)
+            {
+                MessageBox.Show("Select first an original Map JPG");
+                this.ShowOriginalMapTools.IsChecked = true;
+            }
+        }
+
+        /// <summary>
+        /// Show the right grid based on which checkbox is selected in the DrawingTools group.
+        /// </summary>
+        private void ShowAnToolsGrid()
+        {
+            if (this.ShowOriginalMapTools != null && this.OriginalMapGrid != null)
+            {
+                this.OriginalMapGrid.Visibility = (bool)this.ShowOriginalMapTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (this.ShowBorderEndPointTools != null && this.BorderEndPointsGrid != null)
+            {
+                this.BorderEndPointsGrid.Visibility = (bool)this.ShowBorderEndPointTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (this.ShowBorderTools != null && this.BordersGrid != null)
+            {
+                this.BordersGrid.Visibility = (bool)this.ShowBorderTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (this.ShowCountryTools != null && this.CountriesGrid != null)
+            {
+                this.CountriesGrid.Visibility = (bool)this.ShowCountryTools.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        /// <summary>
+        /// Check if the given <see cref="CountryItem"/> allready excists in the countryItems list and warn the user.
+        /// </summary>
+        /// <param name="countryItem"> The <see cref="CountryItem"/> instance. </param>
+        /// <returns></returns>
+        private bool CountryExcists(CountryItem countryItem)
+        {
+            if (this.countryItems.ToList().Find(c => c.Name == countryItem.Name) != null)
+            {
+                MessageBox.Show("There is allready a country with this name in the list.");
+                return true;
+            }
+
+            if (this.countryItems.ToList().Find(delegate(CountryItem i)
+            {
+                return countryItem.BorderItems
+                    .OrderBy(b1 => b1.EndPointNumbers[0])
+                    .ThenBy(b2 => b2.EndPointNumbers[1])
+                    .SequenceEqual(i.BorderItems
+                        .OrderBy(b1 => b1.EndPointNumbers[0])
+                        .ThenBy(b2 => b2.EndPointNumbers[1]));
+            }) != null)
+            {
+                MessageBox.Show("There is allready a country with these borders in the list");
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Create a new <see cref="CountryItem"/> based on the current selections in the controls in the CountriesGrid.
+        /// </summary>
+        /// <returns> The new <see cref="CountryItem"/>. </returns>
+        private CountryItem CreateCountryItem()
+        {
+            List<BorderItem> borderItemsForCountry = this.BordersForCountry.Items.Cast<BorderItem>().ToList();
+            CountryItem countryItem = new CountryItem(this.CountryName.Text, borderItemsForCountry);
+            return countryItem;
+        }
+
+        /// <summary>
+        /// Remove the given <see cref="BorderItem"/> from the DrawingSurface Canvas   
+        /// </summary>
+        /// <param name="borderItem"> The <see cref="BorderItem"/> to remove. </param>
+        private void RemoveBorderItem(BorderItem borderItem)
+        {
+            foreach (KeyValuePair<Line, int[]> lineNumbers in borderItem.Lines)
+            {
+                foreach (int number in lineNumbers.Value)
+                {
+                    if (!borderItem.EndPointNumbers.Contains(number))
+                    {
+                        this.borderPointItems.Remove(this.borderPointItems.Find(b => b.Number == number));
+                    }
+                }
+            }
+
+            foreach (Line line in borderItem.Lines.Keys)
+            {
+                this.DrawingSurface.Children.Remove(line);
+            }
+
+            this.borderItems.Remove(borderItem);
+            this.ReDraw();
         }
     }
 }

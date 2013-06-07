@@ -1,4 +1,10 @@
-﻿namespace DrawMap.Tests
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="MapFileTests.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+namespace DrawMap.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -45,7 +51,7 @@
                 this.mapFiles.FileName = "test.xml";
 
                 // Assert
-                Assert.IsTrue(this.mapFiles.MapChanged);
+                Assert.IsTrue(this.mapFiles.IsMapChanged);
             }
         }
 
@@ -101,7 +107,7 @@
                 this.mapFiles.Save();
 
                 // Assert
-                Assert.IsFalse(this.mapFiles.MapChanged);
+                Assert.IsFalse(this.mapFiles.IsMapChanged);
             }
 
             /// <summary>
@@ -180,7 +186,7 @@
                 this.mapFiles.New();
 
                 // Assert
-                Assert.IsFalse(this.mapFiles.MapChanged);
+                Assert.IsFalse(this.mapFiles.IsMapChanged);
             }
 
             /// <summary>
@@ -198,7 +204,7 @@
                 this.mapFiles.New();
 
                 // Assert
-                Assert.IsFalse(this.mapFiles.MapChanged);
+                Assert.IsFalse(this.mapFiles.IsMapChanged);
             }
 
             /// <summary>
@@ -215,7 +221,7 @@
                 this.mapFiles.New();
 
                 // Assert
-                Assert.IsFalse(this.mapFiles.MapChanged);
+                Assert.IsFalse(this.mapFiles.IsMapChanged);
             }
 
             /// <summary>
@@ -383,10 +389,10 @@
                 // Arange
 
                 // Act
-                int number = this.mapFiles.AddBorderPoint(1, 1);
+                int number = this.mapFiles.AddBorderPoint(1, 1, true);
 
                 // Assert.
-                Assert.AreEqual(true, this.mapFiles.MapChanged);
+                Assert.AreEqual(true, this.mapFiles.IsMapChanged);
             }
 
             /// <summary>
@@ -398,7 +404,7 @@
                 // Arange
 
                 // Act
-                int number = this.mapFiles.AddBorderPoint(1, 1);
+                int number = this.mapFiles.AddBorderPoint(1, 1, true);
 
                 // Assert the mock is configureted to return 1.
                 Assert.AreEqual(1, number);
@@ -419,14 +425,14 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
-                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2, true);
 
                 // Act
                 this.mapFiles.AddCountryBorder(numbers);
 
                 // Assert the mock is configureted to return 1.
-                Assert.AreEqual(true, this.mapFiles.MapChanged);
+                Assert.AreEqual(true, this.mapFiles.IsMapChanged);
             }
 
             /// <summary>
@@ -437,7 +443,7 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
                 numbers[1] = numbers[0];
 
                 // Act
@@ -455,8 +461,8 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
-                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2, true);
                 this.mapFiles.AddCountryBorder(numbers);
 
                 // Act
@@ -473,8 +479,8 @@
             public void ShouldThrowExceptionIfNumbersAreNotInTheRightOrder()
             {
                 // Arange
-                int number1 = this.mapFiles.AddBorderPoint(1, 1);
-                int number2 = this.mapFiles.AddBorderPoint(2, 2);
+                int number1 = this.mapFiles.AddBorderPoint(1, 1, true);
+                int number2 = this.mapFiles.AddBorderPoint(2, 2, true);
                 int[] numbers = new int[2];
                 numbers[0] = number2;
                 numbers[1] = number1;
@@ -494,7 +500,7 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
                 numbers[1] = 2;
 
                 // Act
@@ -512,13 +518,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderPoint(20, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers1[1] = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
-                numbers2[0] = this.mapFiles.AddBorderPoint(10, 20);
-                numbers2[1] = this.mapFiles.AddBorderPoint(20, 10);
+                numbers2[0] = this.mapFiles.AddBorderPoint(10, 20, true);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 10, true);
 
                 // Act
                 this.mapFiles.AddCountryBorder(numbers2);
@@ -557,13 +563,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20, true);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
                 numbers2[0] = numbers1[1];
-                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(numbers2);
 
                 int[] numbers3 = new int[2];
@@ -592,13 +598,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20, true);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
                 numbers2[0] = numbers1[1];
-                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(numbers2);
 
                 int[] numbers3 = new int[2];
@@ -626,13 +632,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20, true);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
                 numbers2[0] = numbers1[1];
-                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(numbers2);
 
                 List<int[]> borders = new List<int[]>();
@@ -654,13 +660,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20, true);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
                 numbers2[0] = numbers1[1];
-                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(numbers2);
 
                 int[] numbers3 = new int[2];
@@ -688,13 +694,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20, true);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
                 numbers2[0] = numbers1[1];
-                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(numbers2);
 
                 int[] numbers3 = new int[2];
@@ -704,7 +710,7 @@
 
                 int[] numbers4 = new int[2];
                 numbers4[0] = numbers1[0];
-                numbers4[1] = this.mapFiles.AddBorderPoint(20, 10);
+                numbers4[1] = this.mapFiles.AddBorderPoint(20, 10, true);
 
                 int[] numbers5 = new int[2];
                 numbers5[0] = numbers2[1];
@@ -736,13 +742,13 @@
             {
                 // Arange
                 int[] numbers1 = new int[2];
-                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20);
+                numbers1[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers1[1] = this.mapFiles.AddBorderPoint(10, 20, true);
                 this.mapFiles.AddCountryBorder(numbers1);
 
                 int[] numbers2 = new int[2];
                 numbers2[0] = numbers1[1];
-                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20);
+                numbers2[1] = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(numbers2);
 
                 int[] numbers3 = new int[2];
@@ -854,12 +860,97 @@
             public void ShouldThrowExceptionIfEndPointIsPartOfCountryBorder()
             {
                 // Arange
-                int pointToRemove = this.mapFiles.AddBorderPoint(10, 10);
-                int secondPoint = this.mapFiles.AddBorderPoint(20, 20);
+                int pointToRemove = this.mapFiles.AddBorderPoint(10, 10, true);
+                int secondPoint = this.mapFiles.AddBorderPoint(20, 20, true);
                 this.mapFiles.AddCountryBorder(new int[] { pointToRemove, secondPoint });
 
                 // Act
                 this.mapFiles.RemoveBorderPoint(pointToRemove);
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+        }
+
+        /// <summary>
+        /// Tests for the RemoveCountryBorder Method.
+        /// </summary>
+        [TestClass]
+        public class TheRemoveCountryBorderMethod : MapFileTests
+        {
+            /// <summary>
+            /// Test if RemoveCountryBorder throws an exception is the CountryBorder does noet excist.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionIfCountryBorderDoesNotExicst()
+            {
+                // Arange
+                int number1 = this.mapFiles.AddBorderPoint(10, 10, true);
+                int number2 = this.mapFiles.AddBorderPoint(20, 20, true);
+
+                // Act
+                this.mapFiles.RemoveCountryBorder(new int[2] { number1, number2 });
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if RemoveCountryBorder throws an exception is the one of the Numbers does noet excist.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+            public void ShouldThrowExceptionIfNumberDoesNotExicst()
+            {
+                // Arange
+
+                // Act
+                this.mapFiles.RemoveCountryBorder(new int[2] { 1, 2 });
+
+                // Assert
+                // Assertion is done bij ExpectedException attribute.
+            }
+
+            /// <summary>
+            /// Test if calling AddBorderEndPoint sets MapChanged to true.
+            /// </summary>
+            [TestMethod, TestCategory("Integration")]
+            public void ShouldSetMapChangedTrue()
+            {
+                // Arange
+                int number1 = this.mapFiles.AddBorderPoint(10, 10, true);
+                int number2 = this.mapFiles.AddBorderPoint(20, 20, true);
+                this.mapFiles.AddCountryBorder(new int[2] { number1, number2 });
+                File.Delete("JMD2.xml");
+                this.mapFiles.FileName = "JMD2.xml";
+                this.mapFiles.Save();
+
+                // Act
+                this.mapFiles.RemoveCountryBorder(new int[2] { number1, number2 });
+
+                // Assert.
+                Assert.AreEqual(true, this.mapFiles.IsMapChanged);
+            }
+
+            /// <summary>
+            /// Test if RemoveCountryBorder throws an exception if the <see cref="CountryBorder"/> is part of a <see cref="Country"/>.
+            /// </summary>
+            [TestMethod, ExpectedException(typeof(ArgumentException))]
+            public void ShouldThrowExceptionIfBorderPartOfCountry()
+            {
+                // Arange
+                int number1 = this.mapFiles.AddBorderPoint(10, 10, true);
+                int number2 = this.mapFiles.AddBorderPoint(20, 10, true);
+                int number3 = this.mapFiles.AddBorderPoint(10, 20, true);
+                int[] border1 = new int[2] { number1, number2 };
+                int[] border2 = new int[2] { number2, number3 };
+                int[] border3 = new int[2] { number1, number3 };
+                this.mapFiles.AddCountryBorder(border1);
+                this.mapFiles.AddCountryBorder(border2);
+                this.mapFiles.AddCountryBorder(border3);
+                this.mapFiles.AddCountry("country1", new List<int[]> { border1, border2, border3 });
+
+                // Act
+                this.mapFiles.RemoveCountryBorder(border1);
 
                 // Assert
                 // Assertion is done bij ExpectedException attribute.
@@ -916,7 +1007,7 @@
             public void ShouldReturnAListWithBordEndPoints()
             {
                 // Arange
-                this.mapFiles.AddBorderPoint(1, 1);
+                this.mapFiles.AddBorderPoint(1, 1, true);
 
                 // Act
                 var endPoints = this.mapFiles.GetBorderPoints();
@@ -941,16 +1032,16 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(10, 10);
-                numbers[1] = this.mapFiles.AddBorderPoint(30, 30);
+                numbers[0] = this.mapFiles.AddBorderPoint(10, 10, true);
+                numbers[1] = this.mapFiles.AddBorderPoint(30, 30, true);
                 this.mapFiles.AddCountryBorder(numbers);
-                int number3 = this.mapFiles.AddBorderPoint(20, 20);
+                int number3 = this.mapFiles.AddBorderPoint(20, 20, true);
 
                 // Act
                 this.mapFiles.InsertBorderPoint(numbers, number3);
 
                 // Assert.
-                Assert.AreEqual(true, this.mapFiles.MapChanged);
+                Assert.AreEqual(true, this.mapFiles.IsMapChanged);
             }
 
             /// <summary>
@@ -961,10 +1052,10 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
                 numbers[1] = numbers[0];
                 this.mapFiles.AddCountryBorder(numbers);
-                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3, true);
 
                 // Act
                 this.mapFiles.InsertBorderPoint(numbers, number3);
@@ -981,10 +1072,10 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[1] = this.mapFiles.AddBorderPoint(1, 1);
-                numbers[0] = this.mapFiles.AddBorderPoint(2, 2);
+                numbers[1] = this.mapFiles.AddBorderPoint(1, 1, true);
+                numbers[0] = this.mapFiles.AddBorderPoint(2, 2, true);
                 this.mapFiles.AddCountryBorder(numbers);
-                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3, true);
 
                 // Act
                 this.mapFiles.InsertBorderPoint(numbers, number3);
@@ -1001,9 +1092,9 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
-                int number2 = this.mapFiles.AddBorderPoint(2, 2);
-                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
+                int number2 = this.mapFiles.AddBorderPoint(2, 2, true);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3, true);
                 numbers[1] = number3;
                 this.mapFiles.AddCountryBorder(numbers);
 
@@ -1022,9 +1113,9 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
-                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
-                int number3 = this.mapFiles.AddBorderPoint(3, 3);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2, true);
+                int number3 = this.mapFiles.AddBorderPoint(3, 3, true);
 
                 // Act
                 this.mapFiles.InsertBorderPoint(numbers, number3);
@@ -1041,8 +1132,8 @@
             {
                 // Arange
                 int[] numbers = new int[2];
-                numbers[0] = this.mapFiles.AddBorderPoint(1, 1);
-                numbers[1] = this.mapFiles.AddBorderPoint(2, 2);
+                numbers[0] = this.mapFiles.AddBorderPoint(1, 1, true);
+                numbers[1] = this.mapFiles.AddBorderPoint(2, 2, true);
                 this.mapFiles.AddCountryBorder(numbers);
 
                 // Act

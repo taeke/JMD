@@ -1,4 +1,10 @@
-﻿namespace DrawMap.Interface
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="IMapFiles.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+namespace DrawMap.Interface
 {
     using System.Collections.Generic;
 
@@ -20,7 +26,7 @@
         /// <summary>
         /// Is there a change after the last Save.
         /// </summary>
-        bool MapChanged { get; }
+        bool IsMapChanged { get; }
 
         /// <summary>
         /// The FileName excists.
@@ -54,7 +60,7 @@
         /// <param name="X"> the X coördinant. </param>
         /// <param name="Y"> the Y coördinant. </param>
         /// <returns> The unique indentifying number of the <see cref="BorderPoint"/>. </returns>
-        int AddBorderPoint(double x, double y);
+        int AddBorderPoint(double x, double y, bool isEndPoint);
 
         /// <summary>
         /// Adds a new <see cref="CountryBorder"/>

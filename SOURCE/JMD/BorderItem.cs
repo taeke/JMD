@@ -1,4 +1,10 @@
-﻿namespace JMD
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="BorderItem.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+namespace JMD
 {
     using System.Collections.Generic;
     using System.Windows;
@@ -18,7 +24,7 @@
         /// the BorderItem this may not be the same as numbers. </param>
         public BorderItem(int[] numbers, Line line, int[] lineNumbers)
         {
-            this.Numbers = numbers;
+            this.EndPointNumbers = numbers;
             this.Lines = new Dictionary<Line, int[]>();
             this.Lines.Add(line, lineNumbers);
             this.VisibleInComboBox = Visibility.Visible;
@@ -27,7 +33,7 @@
         /// <summary>
         /// The unique indentifying numbers for the BorderEndPoints.
         /// </summary>
-        public int[] Numbers { get; private set; }
+        public int[] EndPointNumbers { get; private set; }
 
         /// <summary>
         /// The Line used for showing the <see cref="CountryBorder"/> on the drawingSurface.

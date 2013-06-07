@@ -1,4 +1,10 @@
-﻿namespace DrawMap
+﻿//-------------------------------------------------------------------------------------------------------------------------------------------------
+// <copyright file="Map.cs">
+// Taeke van der Veen juni 2013
+// </copyright>
+// Visual Studio Express 2012 for Windows Desktop
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+namespace DrawMap
 {
     using System;
     using System.Collections.Generic;
