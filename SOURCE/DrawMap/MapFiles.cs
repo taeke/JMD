@@ -293,6 +293,7 @@ namespace DrawMap
 
             this.map.BorderPoints.Clear();
             this.map.CountryBorders.Clear();
+            this.map.Countries.Clear();
             this.mapChanged = false;
             this.mayOverwriteExcisting = false;
             this.ignoreChanges = false;
