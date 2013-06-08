@@ -491,6 +491,12 @@ namespace JMD
                 isOk = false;
             }
 
+            if (isOk && (this.BordersForCountry.Items.Count == 0))
+            {
+                MessageBox.Show("The borders do not form a valid country.");
+                isOk = false;
+            }
+
             if (isOk && !this.AreBordersValidCountry())
             {
                 MessageBox.Show("The borders do not form a valid country.");
